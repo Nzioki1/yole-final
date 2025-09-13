@@ -1,0 +1,28 @@
+{
+  "errors.mpesa.per_txn.title": "M-Pesa limit reached",
+  "errors.mpesa.per_txn.body": "The amount exceeds the M-Pesa limit of KES 250,000 per transaction. Reduce the amount or choose Card.",
+
+  "errors.mpesa.daily.title": "Daily M-Pesa limit reached",
+  "errors.mpesa.daily.body": "You've hit today's M-Pesa limit of KES 500,000. Try again after reset or choose Card. {reset_hint}",
+
+  "limits.mpesa.per_txn.header": "M-Pesa per-transaction limit",
+  "limits.mpesa.per_txn.lead": "You've reached the maximum amount allowed for a single M-Pesa transaction.",
+  "limits.mpesa.per_txn.point1": "Maximum per transaction: KES 250,000",
+  "limits.mpesa.per_txn.point2": "To continue: reduce the amount below the limit or choose Card",
+  "limits.mpesa.per_txn.cta.primary": "Adjust amount",
+  "limits.mpesa.per_txn.cta.secondary": "Use Card instead",
+
+  "limits.mpesa.daily.header": "Daily M-Pesa limit",
+  "limits.mpesa.daily.lead": "You've reached your daily M-Pesa limit.",
+  "limits.mpesa.daily.point1": "Daily total allowed: KES 500,000",
+  "limits.mpesa.daily.point2": "{reset_hint}",
+  "limits.mpesa.daily.point3": "To continue now: use Card",
+  "limits.mpesa.daily.cta.primary": "Use Card instead",
+  "limits.mpesa.daily.cta.secondary": "Back to amount",
+
+  "limits.reset.inline": "Resets in {time_short}",
+  "limits.reset.relative": "Resets in {time_full}",
+  "limits.reset.absolute": "Next available at {time_abs} EAT",
+
+  "common.learnMore": "Learn more"
+}

@@ -1,0 +1,165 @@
+name: PRD Guard
+
+on:
+  pull_request:
+    paths:
+      - 'docs/PRD.md'
+      - 'design/Yole Final.zip'
+      - 'lib/**'
+      - '.github/workflows/prd-guard.yml'
+
+jobs:
+  prd-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check PRD version bump
+        if: contains(github.event.pull_request.changed_files, 'docs/PRD.md')
+        run: |
+          echo "Checking if PRD version was bumped..."
+          
+          # Get the PRD version from the current PR
+          CURRENT_VERSION=$(grep -E '^prd_version:' docs/PRD.md | sed 's/prd_version: *//')
+          echo "Current PRD version: $CURRENT_VERSION"
+          
+          # Get the PRD version from the base branch
+          git checkout ${{ github.event.pull_request.base.sha }}
+          BASE_VERSION=$(grep -E '^prd_version:' docs/PRD.md | sed 's/prd_version: *//')
+          echo "Base PRD version: $BASE_VERSION"
+          
+          # Switch back to PR branch
+          git checkout ${{ github.event.pull_request.head.sha }}
+          
+          # Check if version was incremented
+          if [ "$CURRENT_VERSION" = "$BASE_VERSION" ]; then
+            echo "❌ PRD version must be bumped when docs/PRD.md changes"
+            echo "Current: $CURRENT_VERSION, Base: $BASE_VERSION"
+            exit 1
+          fi
+          
+          echo "✅ PRD version properly bumped: $BASE_VERSION → $CURRENT_VERSION"
+
+      - name: Check design hash updates
+        if: contains(github.event.pull_request.changed_files, 'design/Yole Final.zip')
+        run: |
+          echo "Checking if design hash was updated..."
+          
+          # Get the design hash from PRD
+          CURRENT_PRD_HASH=$(grep -E '^design_sha256:' docs/PRD.md | sed 's/design_sha256: *"//' | sed 's/"//')
+          echo "Current PRD design hash: $CURRENT_PRD_HASH"
+          
+          # Get the design hash from design-lock.json
+          CURRENT_LOCK_HASH=$(grep -E '"design_hash":' docs/design-lock.json | sed 's/.*"design_hash": *"//' | sed 's/".*//')
+          echo "Current design-lock hash: $CURRENT_LOCK_HASH"
+          
+          # Check if hashes match
+          if [ "$CURRENT_PRD_HASH" != "$CURRENT_LOCK_HASH" ]; then
+            echo "❌ Design hash mismatch between PRD and design-lock.json"
+            echo "PRD: $CURRENT_PRD_HASH"
+            echo "Lock: $CURRENT_LOCK_HASH"
+            exit 1
+          fi
+          
+          # Check if hash was actually updated (not TBD)
+          if [ "$CURRENT_PRD_HASH" = "TBD" ]; then
+            echo "❌ Design hash must be updated from TBD when design bundle changes"
+            exit 1
+          fi
+          
+          echo "✅ Design hash properly updated: $CURRENT_PRD_HASH"
+
+      - name: Check for hardcoded colors
+        if: contains(github.event.pull_request.changed_files, 'lib/')
+        run: |
+          echo "Checking for hardcoded colors in lib/..."
+          
+          # Find hardcoded Colors usage, excluding theme files
+          HARDCODED_COLORS=$(find lib/ -name "*.dart" \
+            ! -path "*/tokens_*" \
+            ! -path "*/color_schemes*" \
+            ! -path "*/app_theme*" \
+            -exec grep -l "Colors\." {} \; 2>/dev/null || true)
+          
+          if [ -n "$HARDCODED_COLORS" ]; then
+            echo "❌ Found hardcoded Colors usage in:"
+            echo "$HARDCODED_COLORS"
+            echo ""
+            echo "Please use design tokens from theme instead of hardcoded Colors.*"
+            echo "Allowed theme files: tokens_*, color_schemes*, app_theme*"
+            exit 1
+          fi
+          
+          # Find hardcoded Color() constructors, excluding theme files
+          HARDCODED_COLOR_CONSTRUCTORS=$(find lib/ -name "*.dart" \
+            ! -path "*/tokens_*" \
+            ! -path "*/color_schemes*" \
+            ! -path "*/app_theme*" \
+            -exec grep -l "Color(" {} \; 2>/dev/null || true)
+          
+          if [ -n "$HARDCODED_COLOR_CONSTRUCTORS" ]; then
+            echo "❌ Found hardcoded Color() constructors in:"
+            echo "$HARDCODED_COLOR_CONSTRUCTORS"
+            echo ""
+            echo "Please use design tokens from theme instead of hardcoded Color()"
+            echo "Allowed theme files: tokens_*, color_schemes*, app_theme*"
+            exit 1
+          fi
+          
+          echo "✅ No hardcoded colors found in lib/"
+
+      - name: Check for hardcoded text styles
+        if: contains(github.event.pull_request.changed_files, 'lib/')
+        run: |
+          echo "Checking for hardcoded TextStyle in lib/..."
+          
+          # Find hardcoded TextStyle usage, excluding theme files
+          HARDCODED_TEXT_STYLES=$(find lib/ -name "*.dart" \
+            ! -path "*/tokens_*" \
+            ! -path "*/color_schemes*" \
+            ! -path "*/app_theme*" \
+            -exec grep -l "TextStyle(" {} \; 2>/dev/null || true)
+          
+          if [ -n "$HARDCODED_TEXT_STYLES" ]; then
+            echo "❌ Found hardcoded TextStyle usage in:"
+            echo "$HARDCODED_TEXT_STYLES"
+            echo ""
+            echo "Please use design tokens from theme instead of hardcoded TextStyle()"
+            echo "Allowed theme files: tokens_*, color_schemes*, app_theme*"
+            exit 1
+          fi
+          
+          echo "✅ No hardcoded TextStyle found in lib/"
+
+      - name: Check for hardcoded EdgeInsets
+        if: contains(github.event.pull_request.changed_files, 'lib/')
+        run: |
+          echo "Checking for hardcoded EdgeInsets in lib/..."
+          
+          # Find hardcoded EdgeInsets usage, excluding theme files
+          HARDCODED_EDGE_INSETS=$(find lib/ -name "*.dart" \
+            ! -path "*/tokens_*" \
+            ! -path "*/color_schemes*" \
+            ! -path "*/app_theme*" \
+            -exec grep -l "EdgeInsets(" {} \; 2>/dev/null || true)
+          
+          if [ -n "$HARDCODED_EDGE_INSETS" ]; then
+            echo "❌ Found hardcoded EdgeInsets usage in:"
+            echo "$HARDCODED_EDGE_INSETS"
+            echo ""
+            echo "Please use design tokens from theme instead of hardcoded EdgeInsets()"
+            echo "Allowed theme files: tokens_*, color_schemes*, app_theme*"
+            exit 1
+          fi
+          
+          echo "✅ No hardcoded EdgeInsets found in lib/"
+
+      - name: Summary
+        run: |
+          echo "🎉 All PRD Guard checks passed!"
+          echo "✅ PRD version properly managed"
+          echo "✅ Design hash properly updated"
+          echo "✅ No hardcoded styles found"

@@ -1,12 +1,12 @@
 ---
-prd_version: 0.1.0
+prd_version: 0.3.0
 design_bundle: "Yole Final.zip"
 design_sha256: "d6f50cb024cb2de49a7e41404e504a04d2b8b51189a8bc2e4b7d8bf33c8b49d9"
 api_collection: "Yole.postman_collection.json"
 api_sha256: "135420f8b630d51af6cd29b566099ab18c6926c1060d17f72425b20de8406fca"
 owners: ["Product: You", "Engineering: You/Team"]
 reviewers: ["Design Lead", "QA Lead", "Security"]
-last_updated: "2025-09-11"
+last_updated: "2025-01-27"
 status: "MVP in build"
 ---
 
@@ -14,7 +14,7 @@ status: "MVP in build"
 ## Product Requirements Document (PRD)
 
 ## 1) Summary & Vision
-**Yole** lets users send **USD** from anywhere to recipients in **DR Congo (CD)**. Yole **does not hold a wallet**. Instead it:
+**Yole** lets users send **USD/EUR** from anywhere to recipients in **DR Congo (CD)**. Yole **does not hold a wallet**. Instead it:
 1) shows what the sender must pay (amount + Yole fee),
 2) takes payment via a partner checkout (**Card** or **M-Pesa**),
 3) shows what the recipient will receive **in USD**.
@@ -26,22 +26,29 @@ status: "MVP in build"
 
 ## 2) In-Scope / Out-of-Scope
 **In-Scope (MVP)**
-- 4-step send flow: **Send Money → Enter Amount → Review → Success**
-- Fee/charges breakdown: **You send (USD)** / **Yole fee (USD)** / **They receive (USD)**
+- **Multi-step send flow:** **Welcome → Send Money → Select Recipient → Enter Amount → Review → Success**
+- **Multi-currency support:** **USD/EUR** to **USD** transfers
+- Fee/charges breakdown: **You send (USD/EUR)** / **Yole fee (USD)** / **They receive (USD)**
 - Payments via **Pesapal v3** (Card & M-Pesa) using a redirect/WebView flow
 - Auth (register/login/refresh/logout), **KYC**, **email verification (required)**
-- **Dark & Light** UI parity using the pinned design bundle
+- **Dark & Light** UI parity using complete design token system
 - Server-synced **Favorites**; quick **Repeat** from history/detail
+- **M-Pesa limits enforcement** with dedicated screens
+- **Transaction detail** with comprehensive status tracking
+- **Profile management** with theme switching and biometrics
+- **Welcome/Onboarding** with animations and sparkle effects
+- **System States Demo** for comprehensive error handling
+- **Advanced animations** and micro-interactions
 
 **Out-of-Scope (MVP)**
 - In-app wallet balances
-- Non-USD receive currencies
+- Non-USD receive currencies (beyond USD)
 - Advanced recipient verification beyond name/phone
 
 ---
 
 ## 3) Personas
-- **Sender Sam** — Sends small/medium USD amounts to DR Congo; prioritizes clarity and speed.
+- **Sender Sam** — Sends small/medium USD/EUR amounts to DR Congo; prioritizes clarity and speed.
 - **Returning Rhea** — Sends regularly; expects a ~30-second repeat flow.
 - **Compliance Chloe** (internal) — Requires audit-ready KYC and transaction logs.
 
@@ -51,84 +58,217 @@ status: "MVP in build"
 - **Flutter** (iOS & Android)
 - **Theme Modes:** **Dark** and **Light** (both required)
 - **Motion:** iOS-style press (scale ≈ 0.97, opacity ≈ 0.95, 120 ms, light haptic)
+- **Animations:** Sparkle effects, success animations, loading states, micro-interactions
 
 ---
 
 ## 5) Design Source of Truth (Pinned)
 **Artifact:** `Yole Final.zip` (see `design/`)  
 **Hash:** `d6f50cb024cb2de49a7e41404e504a04d2b8b51189a8bc2e4b7d8bf33c8b49d9`  
-**Contains:** tokens (`src/styles/globals.css`, `src/index.css`), UI atoms/molecules (`src/components/ui/*`), screen blueprints (`src/components/screens/*`)
+**Contains:** Complete Figma design system with React/TypeScript components, CSS tokens, and screen mockups
 
-### 5.1 Normative Token Mapping → Flutter
-Implement once; **ban hardcoded styles** in screens.
+**Design System Structure:**
+- `src/styles/globals.css` - Complete CSS design tokens (Light/Dark themes)
+- `src/components/ui/` - UI component library (50+ components)
+- `src/components/screens/` - Screen mockups and layouts (31 screens)
+- `src/components/layout/` - Navigation and layout components
+- `tokens.json` - Flutter-compatible design tokens
 
-**ColorScheme (Light)**  
-- `primary` ← `--primary`  
-- `background` ← `--background`  
-- `surface` ← `--card`  
-- `onSurface` ← `--foreground`  
-- `surfaceVariant` ← input/chip background  
-- `onSurfaceVariant` ← `--muted-foreground`  
-- `outline` ← `--border` (use ~20–30% opacity for 1px hairlines)  
-- `error` ← `--destructive`  
-- **ThemeExtensions:**  
-  - `success` ← `--success`  
-  - `primaryGradient` ← `--primary-gradient-start` → `--primary-gradient-end`
+### 5.1 Complete Design Token System
 
-**ColorScheme (Dark)**  
-Same mapping from the bundle's `.dark` tokens.
+#### **Color System (Light & Dark)**
+**Primary Colors:**
+- `primary`: `#3B82F6`
+- `primary-foreground`: `#ffffff`
+- `primary-gradient-start`: `#3B82F6`
+- `primary-gradient-end`: `#8B5CF6`
 
-**Spacing / Radius (ThemeExtensions)**  
-- Spacing: `4, 8, 12, 16, 24, 32` (xs…2xl)  
-- Radius: `8, 12, 16, 20`, plus `pill` for CTAs
+**Background Colors:**
+- `background`: `#ffffff` (Light) / `#19173d` (Dark)
+- `foreground`: `#1a1a1a` (Light) / `rgba(255, 255, 255, 0.87)` (Dark)
+- `card`: `#ffffff` (Light) / `#19173d` (Dark)
+- `card-foreground`: `#1a1a1a` (Light) / `rgba(255, 255, 255, 0.87)` (Dark)
 
-**Typography (TextTheme)**  
-- `headlineMedium` ~ 24/700; `titleLarge` ~ 20/700  
-- `bodyLarge` ~ 16/500; `bodyMedium` ~ 14/500; `labelLarge` ~ 16/700
+**Secondary Colors:**
+- `secondary`: `#f8fafc` (Light) / `#374151` (Dark)
+- `secondary-foreground`: `#334155` (Light) / `#f9fafb` (Dark)
+- `muted`: `#f1f5f9` (Light) / `#374151` (Dark)
+- `muted-foreground`: `#64748b` (Light) / `#9ca3af` (Dark)
 
-**UI Patterns (must-do)**  
-- **Primary button:** gradient (token start→end), **56dp** height, **20dp** radius  
-- **Cards/inputs:** `surface` bg, **1px** `outline` at ~25% opacity, **16dp** radius  
-- **Press feedback:** reusable `Pressable` wrapper (scale 0.97, opacity 0.95, 120 ms + light haptic)
+**Accent Colors:**
+- `accent`: `#f1f5f9` (Light) / `#374151` (Dark)
+- `accent-foreground`: `#334155` (Light) / `#f9fafb` (Dark)
 
-**Design Acceptance (both modes)**  
-- No `Color(...)`, inline `TextStyle(...)`, or magic `EdgeInsets(...)` in screens  
-- Primary CTA gradient, card borders, inputs, spacing and radii match bundle  
-- AA contrast verified
+**Status Colors:**
+- `success`: `#10B981`
+- `success-foreground`: `#ffffff`
+- `destructive`: `#EF4444`
+- `destructive-foreground`: `#ffffff`
 
-### 5.2 Token Catalog
+**Border & Input Colors:**
+- `border`: `rgba(148, 163, 184, 0.3)` (Light) / `rgba(255, 255, 255, 0.5)` (Dark)
+- `input`: `transparent`
+- `input-background`: `#f8fafc` (Light) / `rgba(255, 255, 255, 0.1)` (Dark)
+- `switch-background`: `#e2e8f0` (Light) / `rgba(255, 255, 255, 0.2)` (Dark)
 
-#### Schema v1.1 (UI tokens for Home + Transaction Detail)
-- **Status tokens** (new under `tokens.components.status`):
-  - pending/completed/failed/reversed each define: fg, bg.light, bg.dark, radius, height, paddingX
-- **Transaction item tokens** (new under `tokens.components.transactionItem`):
-  - paddingX:16, paddingY:14, avatarSize:40, gap:12
-- **Favorites rail**: uses `card` + global spacing (no dedicated tokens)
-- **Search**: uses `components.input` with a leading icon (no dedicated tokens)
-- **Greeting**: uses `headlineMedium` (24/700)
-- **Router**: `/transaction/:id` is a full-screen route
+**Chart Colors (5-color palette):**
+- `chart-1`: `oklch(0.646 0.222 41.116)` (Light) / `oklch(0.488 0.243 264.376)` (Dark)
+- `chart-2`: `oklch(0.6 0.118 184.704)` (Light) / `oklch(0.696 0.17 162.48)` (Dark)
+- `chart-3`: `oklch(0.398 0.07 227.392)` (Light) / `oklch(0.769 0.188 70.08)` (Dark)
+- `chart-4`: `oklch(0.828 0.189 84.429)` (Light) / `oklch(0.627 0.265 303.9)` (Dark)
+- `chart-5`: `oklch(0.769 0.188 70.08)` (Light) / `oklch(0.645 0.246 16.439)` (Dark)
+
+**Sidebar Colors:**
+- `sidebar`: `oklch(0.985 0 0)` (Light) / `oklch(0.205 0 0)` (Dark)
+- `sidebar-foreground`: `oklch(0.145 0 0)` (Light) / `oklch(0.985 0 0)` (Dark)
+- `sidebar-primary`: `#3B82F6` (Light) / `oklch(0.488 0.243 264.376)` (Dark)
+- `sidebar-accent`: `oklch(0.97 0 0)` (Light) / `oklch(0.269 0 0)` (Dark)
+
+**Ring & Focus Colors:**
+- `ring`: `oklch(0.708 0 0)` (Light) / `oklch(0.439 0 0)` (Dark)
+
+#### **Typography System**
+**Font Family:** `Inter`
+
+**Text Styles:**
+- `headline-large`: 32px/700/40px
+- `headline-medium`: 24px/700/32px
+- `headline-small`: 20px/700/28px
+- `body-large`: 16px/500/24px
+- `body-medium`: 14px/500/20px
+- `body-small`: 12px/500/16px
+- `label-large`: 16px/700/24px
+- `label-medium`: 14px/700/20px
+- `label-small`: 12px/700/16px
+
+#### **Spacing System**
+- `xs`: 4px
+- `sm`: 8px
+- `md`: 12px
+- `lg`: 16px
+- `xl`: 24px
+- `xxl`: 32px
+
+#### **Radius System**
+- `sm`: 8px
+- `md`: 12px
+- `lg`: 16px
+- `xl`: 20px
+- `pill`: 999px
+
+#### **Animation & Interaction System**
+- **Press Feedback:** scale 0.97, opacity 0.95, 120ms duration, light haptic
+- **Sparkle Effects:** Animated background sparkles for dark theme
+- **Success Animations:** Comprehensive success state animations
+- **Loading States:** Skeleton loaders, progress indicators, loading overlays
+- **Micro-interactions:** Smooth transitions, hover effects, focus states
+
+### 5.2 Component Library (50+ Components)
+
+#### **Basic UI Components**
+- `Button` - Standard button with variants (primary, secondary, outline, ghost)
+- `GradientButton` - Gradient button with multiple variants and sizes
+- `Input` - Text input with focus states and validation
+- `Label` - Form labels with proper typography
+- `Card` - Container component with elevation and borders
+- `Avatar` - User avatar with fallback support
+- `Badge` - Status badges and labels
+- `Separator` - Visual separators and dividers
+
+#### **Form Components**
+- `Checkbox` - Checkbox input with proper styling
+- `RadioGroup` - Radio button groups
+- `Select` - Dropdown select component
+- `Textarea` - Multi-line text input
+- `InputOTP` - One-time password input
+- `Form` - Form wrapper with validation
+- `Slider` - Range slider component
+- `Switch` - Toggle switch component
+
+#### **Navigation Components**
+- `BottomNavigation` - Main app navigation with glow effects
+- `NavigationMenu` - Horizontal navigation menu
+- `Tabs` - Tab navigation component
+- `Breadcrumb` - Breadcrumb navigation
+- `Menubar` - Menu bar component
+- `Sidebar` - Sidebar navigation component
+
+#### **Layout Components**
+- `GlowMenu` - Animated navigation with glow effects
+- `GlowMenuVariants` - Multiple glow menu variants
+- `AspectRatio` - Aspect ratio container
+- `Resizable` - Resizable panels
+- `ScrollArea` - Custom scrollable areas
+- `Sheet` - Slide-out panels
+- `Drawer` - Drawer component
+
+#### **Feedback Components**
+- `Alert` - Alert messages
+- `AlertDialog` - Modal alert dialogs
+- `StatusChip` - Status indicators with 6 variants (success, error, warning, info, pending, neutral)
+- `Progress` - Progress indicators
+- `Skeleton` - Loading skeleton components
+- `LoadingStates` - Comprehensive loading state components
+- `SuccessAnimation` - Success state animations
+- `EmptyState` - Empty state components
+
+#### **Data Display Components**
+- `Table` - Data tables
+- `Calendar` - Calendar component
+- `Chart` - Chart components
+- `Carousel` - Image/content carousel
+- `Pagination` - Pagination controls
+- `TransactionCard` - Transaction display cards
+- `AmountDisplay` - Currency amount display
+
+#### **Overlay Components**
+- `Dialog` - Modal dialogs
+- `Popover` - Popover components
+- `Tooltip` - Tooltip components
+- `HoverCard` - Hover card components
+- `ContextMenu` - Context menu
+- `DropdownMenu` - Dropdown menus
+- `Command` - Command palette
+- `Collapsible` - Collapsible content
+
+#### **Specialized Components**
+- `NetworkBanner` - Network status banners
+- `ErrorBanner` - Error state banners
+- `ThemeToggle` - Theme switching component
+- `YoleLogo` - Brand logo component
+- `Toggle` - Toggle components
+- `ToggleGroup` - Toggle button groups
+- `Sonner` - Toast notifications
+
+#### **Utility Components**
+- `Utils` - Utility functions and helpers
+- `UseMobile` - Mobile detection hook
+- `ImageWithFallback` - Image with fallback support
 
 ---
 
 ## 6) Core User Journeys
 
 ### 6.1 New User → First Send
-1. **Register** (email, name, surname, password, country)
-2. **Send SMS OTP** for phone ownership (if applicable)
-3. **KYC** (phone + OTP + ID number + ID/passport photo[s])
-4. **Email verification — required** (gate sending; "Resend" available)
-5. **Login** (access/refresh tokens) → Dashboard
+1. **Welcome/Onboarding** (with sparkle animations)
+2. **Register** (email, name, surname, password, country)
+3. **Send SMS OTP** for phone ownership (if applicable)
+4. **KYC** (phone + OTP + ID number + ID/passport photo[s])
+5. **Email verification — required** (gate sending; "Resend" available)
+6. **Login** (access/refresh tokens) → Dashboard
 
 ### 6.2 Returning User
 - **Dashboard** → recent transactions & Favorites
 - **Repeat** a past transaction (prefill recipient & amount)
 - **Send to Favorite** in two taps
 
-### 6.3 Send Flow (4 Screens)
-1) **Send Money** — pick recipient (Favorites/search/phone)  
-2) **Enter Amount (USD)** — fetch **charges** + **Yole fee**, compute **They receive (USD)**  
-3) **Review** — confirm recipient + full fee breakdown; select payment method  
-4) **Confirm & Pay** — Pesapal WebView; on return, fetch status; show **Success** or **Failure** (retry/change method)
+### 6.3 Comprehensive Send Flow (6+ Steps)
+1) **Welcome/Onboarding** — animated introduction with sparkle effects
+2) **Send Money** — main send entry point with quick actions
+3) **Select Recipient** — pick from Favorites/search/phone with network selection
+4) **Enter Amount** — multi-currency support (USD/EUR), fetch charges + Yole fee, compute They receive (USD)
+5) **Review & Confirm** — full breakdown with payment method selection
+6) **Success** — animated success state with transaction details
 
 ---
 
@@ -165,12 +305,14 @@ If user selects M-Pesa, ensure the payable **KES** respects caps before creating
 ---
 
 ## 8) Business Rules
-- Corridor: **USD → USD**; recipient country **CD**  
+- Corridor: **USD/EUR → USD**; recipient country **CD**  
 - **Email verification is required**; block "Confirm & Send" until verified  
 - **KYC** must be complete  
 - **Favorites are server-synced** (CRUD); hydrate on login  
 - Quotes: refresh/invalidate after a short TTL (e.g., 5–10 min)  
-- Currency display: 2 decimals, group separators, explicit currency labels ("USD", "KES" when referenced)
+- Currency display: 2 decimals, group separators, explicit currency labels ("USD", "EUR", "KES" when referenced)
+- **Multi-currency support:** USD and EUR as sending currencies
+- **Network selection:** Support for multiple network providers in DR Congo
 
 ---
 
@@ -196,7 +338,7 @@ If user selects M-Pesa, ensure the payable **KES** respects caps before creating
 - `POST /api/email/verification-notification` — resend verification email
 
 **Fees & Quotes**
-- `POST /api/charges` — base charges (amount, currency=USD, recipient_country=CD)
+- `POST /api/charges` — base charges (amount, currency=USD/EUR, recipient_country=CD)
 - `POST /api/yole-charges` — Yole service fee
 
 **Send & Transactions**
@@ -212,41 +354,52 @@ If user selects M-Pesa, ensure the payable **KES** respects caps before creating
 
 ---
 
-## 10) Screens & States (Dark **and** Light required)
+## 10) Complete Screen Inventory (31 Screens)
 
-### Auth & KYC
-- **Welcome** (optional), **Register**, **Email verification required** (Resend), **Login**, **Forgot password** (request & success)
-- **KYC**: phone → **OTP** → **ID capture** (front/back or passport) → selfie (if later needed)  
-  States: success, error/retry
+### **Onboarding & Welcome**
+- **Welcome Screen** - Animated onboarding with sparkle effects and hero image
+- **Splash Screen** - Initial loading and authentication check
 
-### Dashboard
-- Greeting; **Recent transactions**; **Repeat** actions; **Favorites** rail/list; **Search**
-- **Transaction detail**: status timeline, amounts, recipient, `order_tracking_id`, "Refresh status", "Repeat"
+### **Authentication Flow**
+- **Login Screen** - Email/password login with biometric option
+- **Register Screen** - User registration with form validation
+- **Signup Screen** - Alternative signup flow
+- **Email Verification Screen** - Required email verification with resend option
+- **Forgot Password Screen** - Password reset request
+- **Forgot Password Success Screen** - Password reset confirmation
 
-### Send Flow (4 screens + payment states)
-1. **Send Money** (recipient picker / favorites / address book)  
-2. **Enter Amount (USD)** (quote loading + error states; link to T&Cs/fees)  
-3. **Review** (full breakdown; disabled CTA until KYC + email verified)  
-4. **Confirm & Pay** → **Pesapal WebView** container (spinner, cancel/back)  
-5. **Payment pending** (post-redirect while status resolves)  
-6. **Success** / **Failure** (retry / change method)
+### **KYC Flow**
+- **KYC Screen** - Main KYC entry point
+- **KYC Phone Screen** - Phone number verification
+- **KYC OTP Screen** - SMS OTP verification
+- **KYC ID Capture Screen** - ID document capture (front/back or passport)
+- **KYC Selfie Screen** - Selfie capture for verification
+- **KYC Success Screen** - KYC completion confirmation
+- **KYC Error Screen** - KYC failure and retry options
 
-### Profile & Settings
-- Profile summary; **Theme** (Dark/Light/System); **Biometric** toggle; Change password; Terms; Privacy; Support; Logout
+### **Main Application**
+- **Home Dashboard** - Recent transactions, favorites, quick actions
+- **Send Screen** - Main send entry point
+- **Send Money Flow** - Comprehensive 6-step send flow
+- **Favorites Screen** - Saved recipients management with search
+- **Profile Screen** - User settings, theme switching, biometrics
+- **Transaction Detail Screen** - Comprehensive transaction tracking with status timeline
 
-### Compliance & Limits
-- **Per-txn limit reached** (KES 250k) banner/screen with guidance  
-- **Daily cap reached** (KES 500k) banner/screen with reset countdown
+### **System States & Error Handling**
+- **System States Demo Screen** - Comprehensive demo of loading, error, empty, and network states
+- **Notifications Screen** - User notifications management
 
-### Global
-- Offline & partner-down banners; empty states (no transactions, no favorites, no search results); skeleton loaders
+### **Specialized Screens**
+- **Code Components** - Various UI component examples and showcases
+- **Limits Management** - M-Pesa cap details and enforcement (Not in Design – Pending Decision)
 
-**Missing mockups to add to design bundle**
-- Pesapal **WebView container**, **Payment Pending**, **Payment Failed**  
-- **Transaction detail** screen  
-- Empty states (transactions, favorites, search)  
-- Global banners (offline/partner down)  
-- Cap-reached screens (per-txn & daily)
+### **Screen States & Variations**
+Each screen includes comprehensive state handling:
+- **Loading States** - Skeleton loaders, progress indicators
+- **Error States** - Error banners, retry mechanisms
+- **Empty States** - No data illustrations and actions
+- **Success States** - Success animations and confirmations
+- **Network States** - Offline/online indicators and recovery
 
 ---
 
@@ -254,12 +407,14 @@ If user selects M-Pesa, ensure the payable **KES** respects caps before creating
 **Secure local storage:** access/refresh tokens, theme preference (system/dark/light), biometric opt-in  
 **Models:**
 - `User { id, name, surname, email, country, emailVerified }`
-- `RecipientFavorite { id, name, phone, countryCode }`
-- `Transaction { id, createdAt, recipientName, recipientPhone, sendingAmountUSD, feeUSD, receiveAmountUSD, status, trackingId }`
-- `Quote { amountUSD, feeUSD, totalUSD, receiveUSD, expiresAt }`
+- `RecipientFavorite { id, name, phone, countryCode, network }`
+- `Transaction { id, createdAt, recipientName, recipientPhone, sendingAmountUSD, feeUSD, receiveAmountUSD, status, trackingId, network }`
+- `Quote { amountUSD, feeUSD, totalUSD, receiveUSD, expiresAt, exchangeRate }`
 
 **Derived state:**  
 - M-Pesa daily sum tracker (client-side UX; authoritative validation server-side)
+- Multi-currency exchange rate tracking
+- Network provider preferences
 
 ---
 
@@ -269,6 +424,8 @@ If user selects M-Pesa, ensure the payable **KES** respects caps before creating
 - Quotes expire after TTL → show "Quote expired, refresh"
 - Phone numbers normalized to **E.164**
 - Final transaction state is from **Pesapal GetTransactionStatus** (not callback text)
+- **Multi-currency validation:** Support USD and EUR as sending currencies
+- **Network selection:** Validate network provider compatibility
 
 ---
 
@@ -279,6 +436,7 @@ If user selects M-Pesa, ensure the payable **KES** respects caps before creating
 - **Accessibility:** AA contrast in **both** modes; 44×44 tap targets; dynamic type support
 - **Localization:** explicit currency labels; locale-aware date/time
 - **Observability:** Crashlytics/Sentry; client event logs for quotes, sends, status transitions
+- **Animation Performance:** 60fps animations, smooth transitions, optimized sparkle effects
 
 ---
 
@@ -287,23 +445,29 @@ If user selects M-Pesa, ensure the payable **KES** respects caps before creating
 `quote_requested`, `quote_received`, `quote_failed`,  
 `send_initiated`, `payment_method_selected(card|mpesa)`, `send_confirmed`, `send_success`, `send_failed`,  
 `status_refresh_clicked`, `repeat_send_clicked`, `favorite_send_clicked`,  
-`toggle_dark_mode`, `toggle_light_mode`, `toggle_biometrics`.
+`toggle_dark_mode`, `toggle_light_mode`, `toggle_biometrics`,
+`welcome_screen_viewed`, `sparkle_animation_played`, `system_states_demo_viewed`,
+`multi_currency_selected(usd|eur)`, `network_provider_selected`.
 
 ---
 
 ## 15) Acceptance Criteria
-- Users can **register → KYC → verify email → login** and complete a send to DR Congo
+- Users can **welcome → register → KYC → verify email → login** and complete a send to DR Congo
 - **Card & M-Pesa** sandbox flow works end-to-end: Auth → SubmitOrder → Redirect → Callback/IPN → **GetTransactionStatus**
 - M-Pesa **KES 250k/txn** and **KES 500k/day** enforced with clear errors
 - **Favorites server-synced**; repeat send works from Dashboard & Detail
-- **Dark & Light** themes match the design bundle; iOS-style press animations present
+- **Dark & Light** themes match the complete design system; iOS-style press animations present
 - All protected Yole API calls use **Bearer + X-API-Key**; no secrets in app bundle
+- **Welcome screen** displays with sparkle animations in dark mode
+- **System states demo** showcases all loading, error, and empty states
+- **Multi-currency support** works for USD and EUR sending currencies
+- **50+ UI components** render correctly with proper theming
 
 ---
 
 ## 16) Release Plan
-- **Phase 1 (MVP):** Auth + KYC + **Email verification (required)** + Dashboard + Send flow + Pesapal integration + Profile (dark/light/biometrics)
-- **Phase 2:** Full Favorites CRUD (if partial in P1), notifications, richer receipt view, multi-corridor prep
+- **Phase 1 (MVP):** Welcome + Auth + KYC + **Email verification (required)** + Dashboard + Comprehensive Send flow + Pesapal integration + Profile (dark/light/biometrics) + System States
+- **Phase 2:** Full Favorites CRUD, notifications, richer receipt view, multi-corridor prep
 - **Phase 3:** Referrals, promotions, advanced compliance flows
 
 ---
@@ -313,39 +477,55 @@ If user selects M-Pesa, ensure the payable **KES** respects caps before creating
 - Quote TTL and refresh policy
 - Exact Favorites CRUD (server endpoints if not present)
 - Support/Contact details for Profile screen
+- **M-Pesa Limits Screens** - Not in Design – Pending Decision
+- **Advanced Notifications** - Not in Design – Pending Decision
 
 ---
 
 ### Appendix A — Flutter Theming & Components
-- Implement `AppTheme.light()` / `AppTheme.dark()` from tokens; add `ThemeExtension`s for Spacing/Radius/Success/Gradient
+- Implement `AppTheme.light()` / `AppTheme.dark()` from complete design token system; add `ThemeExtension`s for Spacing/Radius/Success/Gradient/Chart/Sidebar
 - Reusable UI atoms:
   - `Pressable` (scale/opacity/haptic)
-  - `GradientButton` (56dp, pill 20dp)
+  - `GradientButton` (56dp, pill 20dp) with multiple variants
   - Cards/list tiles with border (outline @ ~25% opacity), radius 16dp
+  - `StatusChip` with 6 variants (success, error, warning, info, pending, neutral)
+  - `SparkleLayer` for animated background effects
+  - `SuccessAnimation` for success states
+  - `LoadingStates` for comprehensive loading experiences
 - **No hardcoded** colors, text styles, or paddings in screens
 
-### Appendix B — Route Map (example)/splash
+### Appendix B — Complete Route Map
+```
 /welcome
-/register
+/splash
 /login
+/register
+/signup
 /verify-email
+/forgot-password
+/forgot-password-success
+/kyc
 /kyc/phone
 /kyc/otp
 /kyc/id
-/kyc/selfie (optional placeholder)
+/kyc/selfie
+/kyc/success
+/kyc/error
 /home
-/transaction/:id
 /send
 /send/recipient
 /send/amount
 /send/review
-/send/pay (Pesapal WebView)
+/send/pay
 /send/success
 /send/failure
+/transaction/:id
 /profile
-/profile/settings
-/profile/security
-
+/favorites
+/notifications
+/system-states-demo
+/limits/mpesa (Not in Design – Pending Decision)
+```
 
 ### Appendix C — Pesapal Sandbox Checklist
 - ENV: `PESAPAL_CONSUMER_KEY`, `PESAPAL_CONSUMER_SECRET`, `PESAPAL_CALLBACK_URL`, `PESAPAL_IPN_URL`  
@@ -356,6 +536,7 @@ If user selects M-Pesa, ensure the payable **KES** respects caps before creating
 - Update: Mark transaction **COMPLETED/FAILED/REVERSED**; store `confirmation_code`
 
 ### Appendix D — Test Plan (high-value)
+- Welcome screen with sparkle animations
 - Register → KYC → Email verification gating  
 - Quote success; quote error; quote TTL expiry refresh  
 - M-Pesa caps: 250k breach (per-txn) & 500k daily breach  
@@ -363,6 +544,9 @@ If user selects M-Pesa, ensure the payable **KES** respects caps before creating
 - Callback fires but status still PENDING → polling → COMPLETED  
 - Network loss mid-checkout → resume & reconcile  
 - Favorites sync on login; repeat send from history
+- Multi-currency support (USD/EUR)
+- System states demo functionality
+- All 50+ UI components rendering and theming
 
 ---
 

@@ -1,0 +1,414 @@
+name: Flutter CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop, 'feat/*', 'hotfix/*', 'release/*']
+  pull_request:
+    branches: [main, develop]
+
+env:
+  FLUTTER_VERSION: '3.9.0'
+  JAVA_VERSION: '17'
+
+jobs:
+  # Code Quality & Analysis
+  analyze:
+    name: Analyze & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: Analyze code
+        run: flutter analyze --fatal-infos
+
+      - name: Check formatting
+        run: dart format --set-exit-if-changed .
+
+      - name: Check for size budget violations
+        run: |
+          # Check for large files (>1MB)
+          find . -name "*.dart" -size +1M -exec echo "Large file detected: {}" \; -exec exit 1 \;
+          
+          # Check for excessive imports
+          find lib -name "*.dart" -exec grep -l "import.*import.*import.*import.*import" {} \; | head -5
+          
+          # Check for long files (>500 lines)
+          find lib -name "*.dart" -exec wc -l {} + | awk '$1 > 500 {print "Large file: " $2 " (" $1 " lines)"; exit 1}'
+
+  # Unit Tests
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: Run unit and widget tests
+        run: flutter test --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+
+  # Widget Tests
+  widget-test:
+    name: Widget Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: Run widget tests
+        run: flutter test test/widget_test.dart test/features/ test/core/
+
+  # Golden Tests
+  golden-test:
+    name: Golden Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: Run golden tests
+        run: flutter test test/goldens
+
+      - name: Check for hardcoded values
+        run: |
+          echo "Checking for hardcoded colors..."
+          if grep -r "Color(0x" lib/ --include="*.dart" | grep -v "theme"; then
+            echo "❌ Hardcoded colors detected. Use design tokens from theme system."
+            exit 1
+          fi
+          
+          echo "Checking for hardcoded text styles..."
+          if grep -r "TextStyle(" lib/ --include="*.dart" | grep -v "theme"; then
+            echo "❌ Hardcoded text styles detected. Use theme text styles."
+            exit 1
+          fi
+          
+          echo "Checking for hardcoded spacing..."
+          if grep -r "EdgeInsets.all(" lib/ --include="*.dart" | grep -v "theme"; then
+            echo "❌ Hardcoded spacing detected. Use spacing tokens."
+            exit 1
+          fi
+          
+          echo "✅ No hardcoded values detected."
+
+      - name: Check for debug prints
+        run: |
+          echo "Checking for debug prints in production code..."
+          if grep -r "print(" lib/ --include="*.dart" | grep -v "// TODO\|// FIXME\|// NOTE"; then
+            echo "❌ Debug prints detected in production code. Please remove or use proper logging."
+            exit 1
+          fi
+          echo "✅ No debug prints detected."
+
+  # Integration Tests
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: Run integration tests
+        run: flutter test integration_test/
+
+  # Build Tests
+  build-test:
+    name: Build Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build Android APK
+        run: flutter build apk --debug
+
+      - name: Build Android AAB
+        run: flutter build appbundle --debug
+
+      - name: Build iOS (macOS only)
+        if: runner.os == 'macOS'
+        run: flutter build ios --debug --no-codesign
+
+  # Security Scan
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run security audit
+        run: flutter pub audit
+
+      - name: Check for hardcoded secrets
+        run: |
+          # Check for common secret patterns
+          if grep -r -i "password\|secret\|key\|token" lib/ --include="*.dart" | grep -v "// TODO\|// FIXME\|// NOTE"; then
+            echo "Potential hardcoded secrets detected. Please review."
+            exit 1
+          fi
+
+      - name: Check for debug prints
+        run: |
+          # Check for debug prints in production code
+          if grep -r "print(" lib/ --include="*.dart" | grep -v "// TODO\|// FIXME\|// NOTE"; then
+            echo "Debug prints detected in production code. Please remove or use proper logging."
+            exit 1
+          fi
+
+  # Performance Check
+  performance-check:
+    name: Performance Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: Check bundle size
+        run: |
+          flutter build apk --analyze-size
+          
+          # Check for large assets
+          find assets/ -type f -size +500k -exec echo "Large asset: {}" \; -exec exit 1 \;
+
+      - name: Check for performance anti-patterns
+        run: |
+          # Check for excessive setState calls
+          if grep -r "setState" lib/ --include="*.dart" | wc -l | awk '$1 > 50 {print "Too many setState calls: " $1; exit 1}'; then
+            echo "Performance check passed"
+          fi
+
+      - name: Run performance budget check
+        run: |
+          echo "Running performance budget check..."
+          flutter test test/perf/performance_test.dart
+          
+          # Note: Full frame budget check requires emulator/device
+          # This is a lightweight check that can run in CI
+          echo "Performance budget check completed (lightweight mode)"
+
+  # Release Build & Deploy (main branch only)
+  release-build:
+    name: Release Build & Deploy
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && startsWith(github.event.head_commit.message, 'release:')
+    needs: [analyze, test, widget-test, golden-test, integration-test, build-test, security-scan, performance-check]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Run code generation
+        run: flutter packages pub run build_runner build --delete-conflicting-outputs
+
+      - name: Build release AAB
+        run: flutter build appbundle --release
+
+      - name: Setup Android signing
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > android/app/keystore.jks
+          echo "storeFile=keystore.jks" >> android/key.properties
+          echo "keyAlias=upload" >> android/key.properties
+          echo "storePassword=${{ secrets.STORE_PASS }}" >> android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASS }}" >> android/key.properties
+
+      - name: Sign AAB
+        run: |
+          flutter build appbundle --release
+          ls -la build/app/outputs/bundle/release/
+
+      - name: Setup Google Play Console
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_JSON }}
+          packageName: com.yole.app
+          releaseFiles: build/app/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed
+          inAppUpdatePriority: 2
+          whatsNewDirectory: release-notes/
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: |
+            ## Release v${{ github.run_number }}
+            
+            ### Changes
+            - Automated release build
+            - Signed AAB uploaded to Play Console
+            
+            ### Download
+            - AAB: Available in Play Console
+            - Build artifacts: Available in GitHub Actions
+            
+          draft: false
+          prerelease: false
+
+      - name: Upload AAB to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/bundle/release/app-release.aab
+          asset_name: app-release.aab
+          asset_content_type: application/octet-stream
+
+  # Notification
+  notify:
+    name: Notify Team
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [analyze, test, widget-test, golden-test, integration-test, build-test, security-scan, performance-check, release-build]
+    steps:
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "CI/CD pipeline failed. Please check the logs."
+          # Add Slack/Teams notification here if needed
+
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "CI/CD pipeline completed successfully."
+          # Add Slack/Teams notification here if needed

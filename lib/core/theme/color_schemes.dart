@@ -19,7 +19,7 @@ class YoleColorSchemes {
     onBackground: DesignTokens.lightOnSurface, // Using onSurface as fallback
     surface: DesignTokens.lightSurface,
     onSurface: DesignTokens.lightOnSurface,
-    surfaceVariant: DesignTokens.lightOnSurfaceVariant.withOpacity(0.1),
+    surfaceVariant: const Color(0x199CA3AF),
     onSurfaceVariant: DesignTokens.lightOnSurfaceVariant,
     outline: DesignTokens.lightOutline,
     error: DesignTokens.lightError,
@@ -37,7 +37,7 @@ class YoleColorSchemes {
     onBackground: DesignTokens.darkOnSurface, // Using onSurface as fallback
     surface: DesignTokens.darkSurface,
     onSurface: DesignTokens.darkOnSurface,
-    surfaceVariant: DesignTokens.darkOnSurfaceVariant.withOpacity(0.1),
+    surfaceVariant: const Color(0x199CA3AF),
     onSurfaceVariant: DesignTokens.darkOnSurfaceVariant,
     outline: DesignTokens.darkOutline,
     error: DesignTokens.darkError,

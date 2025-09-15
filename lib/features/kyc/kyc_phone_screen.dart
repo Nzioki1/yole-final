@@ -6,6 +6,7 @@ import '../../core/theme/tokens_spacing.dart';
 import '../../core/theme/tokens_radius.dart';
 import '../../data/repos/kyc_repo.dart';
 import '../../data/api/yole_api_client.dart';
+import '../../data/api/yole_api_client.dart';
 
 /// KYC phone verification screen
 ///
@@ -27,7 +28,7 @@ class _KycPhoneScreenState extends ConsumerState<KycPhoneScreen> {
 
   bool _isLoading = false;
 
-  final KycRepository _kycRepo = const KycRepository(YoleApiClient.create());
+  final KycRepository _kycRepo = KycRepository(createYoleApiClient());
 
   @override
   void dispose() {
@@ -179,7 +180,7 @@ class _KycPhoneScreenState extends ConsumerState<KycPhoneScreen> {
                 GradientButton(
                   onPressed: _isLoading ? null : _sendOtp,
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../core/theme/theme_extensions.dart';
+import '../design/tokens.dart';
+import '../design/typography.dart';
 
 /// Status chip that reads tokens from design-lock.json
 ///
@@ -21,26 +22,19 @@ class StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final successColors = Theme.of(context).extension<SuccessColors>();
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    final (backgroundColor, textColor) = _getStatusColors(
-      context,
-      colorScheme,
-      successColors,
-    );
+    final (backgroundColor, textColor) = _getStatusColors(isDark);
 
     return Container(
       height: 28, // tokens.components.status.height
-      padding: const EdgeInsets.symmetric(
-        horizontal: 12,
-      ), // tokens.components.status.paddingX
+      padding:
+          DesignTokens.spacingMdHorizontal, // tokens.components.status.paddingX
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(
-          999,
-        ), // tokens.components.status.radius
+        borderRadius:
+            DesignTokens.radiusPillAll, // tokens.components.status.radius
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -54,7 +48,7 @@ class StatusChip extends StatelessWidget {
           const SizedBox(width: 6),
           Text(
             _getStatusLabel(),
-            style: textTheme.labelLarge?.copyWith(
+            style: AppTypography.labelMedium.copyWith(
               color: textColor,
               fontWeight: FontWeight.w500,
             ),
@@ -64,44 +58,47 @@ class StatusChip extends StatelessWidget {
     );
   }
 
-  (Color backgroundColor, Color textColor) _getStatusColors(
-    BuildContext context,
-    ColorScheme colorScheme,
-    SuccessColors? successColors,
-  ) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
+  (Color backgroundColor, Color textColor) _getStatusColors(bool isDark) {
     switch (status) {
       case 'pending':
         return (
           isDark
-              ? const Color(0x333B82F6)
-              : const Color(0x1F3B82F6), // bg.dark/bg.light
-          colorScheme.primary, // fg = var(--primary)
+              ? DesignTokens.primary.withOpacity(0.2)
+              : DesignTokens.primary.withOpacity(0.1),
+          isDark ? DesignTokens.darkPrimary : DesignTokens.primary,
         );
       case 'completed':
         return (
           isDark
-              ? const Color(0x3310B981)
-              : const Color(0x1F10B981), // bg.dark/bg.light
-          successColors?.success ?? colorScheme.primary, // fg = var(--success)
+              ? DesignTokens.success.withOpacity(0.2)
+              : DesignTokens.success.withOpacity(0.1),
+          isDark ? DesignTokens.darkSuccess : DesignTokens.success,
         );
       case 'failed':
         return (
           isDark
-              ? const Color(0x33EF4444)
-              : const Color(0x1FEF4444), // bg.dark/bg.light
-          colorScheme.error, // fg = var(--destructive)
+              ? DesignTokens.error.withOpacity(0.2)
+              : DesignTokens.error.withOpacity(0.1),
+          isDark ? DesignTokens.darkError : DesignTokens.error,
         );
       case 'reversed':
         return (
           isDark
-              ? const Color(0x3394A3B8)
-              : const Color(0x1F94A3B8), // bg.dark/bg.light
-          colorScheme.onSurfaceVariant, // fg = var(--muted-foreground)
+              ? DesignTokens.onSurfaceVariant.withOpacity(0.2)
+              : DesignTokens.onSurfaceVariant.withOpacity(0.1),
+          isDark
+              ? DesignTokens.darkOnSurfaceVariant
+              : DesignTokens.onSurfaceVariant,
         );
       default:
-        return (colorScheme.surfaceVariant, colorScheme.onSurfaceVariant);
+        return (
+          isDark
+              ? DesignTokens.darkSurfaceVariant
+              : DesignTokens.surfaceVariant,
+          isDark
+              ? DesignTokens.darkOnSurfaceVariant
+              : DesignTokens.onSurfaceVariant,
+        );
     }
   }
 

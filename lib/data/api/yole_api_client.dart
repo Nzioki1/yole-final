@@ -20,20 +20,20 @@ abstract class YoleApiClient {
 
   // System endpoints
   @GET('/api/status')
-  Future<Map<String, dynamic>> getStatus();
+  Future<dynamic> getStatus();
 
   @GET('/api/countries')
-  Future<List<Map<String, dynamic>>> getCountries(); // <-- concrete element type
+  Future<dynamic> getCountries();
 
   // Auth & Session endpoints
   @POST('/api/register')
-  Future<Map<String, dynamic>> register(@Body() Map<String, dynamic> userData);
+  Future<dynamic> register(@Body() Map<String, dynamic> userData);
 
   @POST('/api/login')
-  Future<Map<String, dynamic>> login(@Body() Map<String, dynamic> credentials);
+  Future<dynamic> login(@Body() Map<String, dynamic> credentials);
 
   @POST('/api/refresh-token')
-  Future<Map<String, dynamic>> refreshToken(@Body() Map<String, dynamic> refreshData);
+  Future<dynamic> refreshToken(@Body() Map<String, dynamic> refreshData);
 
   // POST with no body -> void
   @POST('/api/logout')
@@ -42,14 +42,14 @@ abstract class YoleApiClient {
   // POST single value -> use FormUrlEncoded + Field
   @FormUrlEncoded()
   @POST('/api/password/forgot')
-  Future<Map<String, dynamic>> forgotPassword(@Field('email') String email);
+  Future<dynamic> forgotPassword(@Field('email') String email);
 
   // Verification endpoints
   @POST('/api/sms/send-otp')
-  Future<Map<String, dynamic>> sendSmsOtp(@Body() Map<String, dynamic> phoneData);
+  Future<dynamic> sendSmsOtp(@Body() Map<String, dynamic> phoneData);
 
   @POST('/api/validate-kyc')
-  Future<Map<String, dynamic>> validateKyc(@Body() Map<String, dynamic> kycData);
+  Future<dynamic> validateKyc(@Body() Map<String, dynamic> kycData);
 
   // POST with no body -> void
   @POST('/api/email/verification-notification')
@@ -57,20 +57,22 @@ abstract class YoleApiClient {
 
   // Fees & Quotes endpoints
   @POST('/api/charges')
-  Future<Map<String, dynamic>> getCharges(@Body() Map<String, dynamic> chargeRequest);
+  Future<dynamic> getCharges(@Body() Map<String, dynamic> chargeRequest);
 
   @POST('/api/yole-charges')
-  Future<Map<String, dynamic>> getYoleCharges(@Body() Map<String, dynamic> chargeRequest);
+  Future<dynamic> getYoleCharges(@Body() Map<String, dynamic> chargeRequest);
 
   // Send & Transactions endpoints
   @POST('/api/send-money')
-  Future<Map<String, dynamic>> sendMoney(@Body() Map<String, dynamic> sendRequest);
+  Future<dynamic> sendMoney(@Body() Map<String, dynamic> sendRequest);
 
   @POST('/api/transaction/status')
-  Future<Map<String, dynamic>> getTransactionStatus(@Body() Map<String, dynamic> statusRequest);
+  Future<dynamic> getTransactionStatus(
+    @Body() Map<String, dynamic> statusRequest,
+  );
 
   @GET('/api/transactions')
-  Future<List<Map<String, dynamic>>> getTransactions(); // <-- concrete element type
+  Future<dynamic> getTransactions();
 }
 
 /// Factory function to create YoleApiClient instance

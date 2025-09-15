@@ -56,25 +56,22 @@ class DesignTokens {
 
   /// Custom theme extensions
   static const List<ThemeExtension<dynamic>> extensions = [
-    _SuccessColors(),
-    _GradientColors(),
+    _SuccessColors(success: DesignTokens.lightSuccess, onSuccess: Colors.white),
+    _GradientColors(
+      primaryGradientStart: DesignTokens.lightPrimaryGradientStart,
+      primaryGradientEnd: DesignTokens.lightPrimaryGradientEnd,
+    ),
   ];
 }
 
 class _SuccessColors extends ThemeExtension<_SuccessColors> {
-  const _SuccessColors({
-    required this.success,
-    required this.onSuccess,
-  });
+  const _SuccessColors({required this.success, required this.onSuccess});
 
   final Color success;
   final Color onSuccess;
 
   @override
-  _SuccessColors copyWith({
-    Color? success,
-    Color? onSuccess,
-  }) {
+  _SuccessColors copyWith({Color? success, Color? onSuccess}) {
     return _SuccessColors(
       success: success ?? this.success,
       onSuccess: onSuccess ?? this.onSuccess,
@@ -115,8 +112,16 @@ class _GradientColors extends ThemeExtension<_GradientColors> {
   _GradientColors lerp(ThemeExtension<_GradientColors>? other, double t) {
     if (other is! _GradientColors) return this;
     return _GradientColors(
-      primaryGradientStart: Color.lerp(primaryGradientStart, other.primaryGradientStart, t)!,
-      primaryGradientEnd: Color.lerp(primaryGradientEnd, other.primaryGradientEnd, t)!,
+      primaryGradientStart: Color.lerp(
+        primaryGradientStart,
+        other.primaryGradientStart,
+        t,
+      )!,
+      primaryGradientEnd: Color.lerp(
+        primaryGradientEnd,
+        other.primaryGradientEnd,
+        t,
+      )!,
     );
   }
 }

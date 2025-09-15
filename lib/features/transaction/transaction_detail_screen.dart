@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:dio/dio.dart';
 import '../../widgets/pressable.dart';
 import '../../widgets/avatar_badge.dart';
 import '../../widgets/status_chip.dart';
@@ -9,6 +10,10 @@ import '../../core/theme/tokens_radius.dart';
 import '../../data/repos/transactions_repo.dart';
 import '../../data/repos/pesapal_repo.dart';
 import '../../data/api/yole_api_client.dart';
+
+// Design token for pending status color from design-lock.json
+// tokens.components.status.pending.fg = "#F59E0B"
+const Color _pendingStatusColor = Color(0xFFF59E0B);
 
 /// Transaction Detail Screen
 ///
@@ -31,11 +36,11 @@ class TransactionDetailScreen extends ConsumerStatefulWidget {
 
 class _TransactionDetailScreenState
     extends ConsumerState<TransactionDetailScreen> {
-  final TransactionsRepository _transactionsRepo = const TransactionsRepository(
-    YoleApiClient.create(),
+  final TransactionsRepository _transactionsRepo = TransactionsRepository(
+    createYoleApiClient(),
   );
   final PesapalRepository _pesapalRepo = PesapalRepository(
-    YoleApiClient.create().dio,
+    Dio(), // TODO: Configure with proper base URL for Pesapal
   );
 
   Map<String, dynamic>? _transaction;
@@ -613,8 +618,7 @@ class _TransactionDetailScreenState
       case TransactionStatus.reversed:
         return colorScheme.onSurfaceVariant;
       case TransactionStatus.pending:
-        // Use design token for pending status color
-        return const Color(0xFFF59E0B); // tokens.components.status.pending.fg
+        return _pendingStatusColor;
     }
   }
 }

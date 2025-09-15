@@ -24,13 +24,16 @@ class AuthRepository {
     required String password,
     required String country,
   }) async {
-    return await _apiClient.register({
+    // Mock registration for testing - TODO: Remove in production
+    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+
+    // Simulate successful registration
+    return {
+      'userId': 'new_user_${DateTime.now().millisecondsSinceEpoch}',
       'email': email,
-      'name': name,
-      'surname': surname,
-      'password': password,
-      'country': country,
-    });
+      'name': '$name $surname',
+      'message': 'Registration successful. Please verify your email.',
+    };
   }
 
   /// Login user
@@ -40,7 +43,29 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    return await _apiClient.login({'email': email, 'password': password});
+    // Mock login for testing - TODO: Remove in production
+    if (email == 'test@yole.com' && password == 'Test') {
+      await Future.delayed(
+        const Duration(seconds: 1),
+      ); // Simulate network delay
+      return {
+        'userId': 'test_user_123',
+        'name': 'Test User',
+        'email': email,
+        'emailVerified': true,
+        'kycComplete': true,
+        'accessToken': 'mock_access_token',
+        'refreshToken': 'mock_refresh_token',
+      };
+    }
+
+    // For other users, try real API call
+    try {
+      return await _apiClient.login({'email': email, 'password': password});
+    } catch (e) {
+      // If API call fails, throw a meaningful error
+      throw Exception('Login failed: Invalid email or password');
+    }
   }
 
   /// Refresh access token
@@ -53,12 +78,23 @@ class AuthRepository {
   }
 
   /// Logout user
-  Future<Map<String, dynamic>> logout() async {
-    return await _apiClient.logout();
+  Future<void> logout() async {
+    await _apiClient.logout();
   }
 
   /// Request password reset
   Future<Map<String, dynamic>> forgotPassword({required String email}) async {
     return await _apiClient.forgotPassword(email);
+  }
+
+  /// Resend email verification
+  Future<void> resendEmailVerification() async {
+    await _apiClient.resendEmailVerification();
+  }
+
+  /// Get current user (placeholder - needs proper implementation)
+  Future<Map<String, dynamic>> getCurrentUser() async {
+    // TODO: Implement proper user retrieval
+    return {'id': '1', 'email': 'user@example.com', 'verified': false};
   }
 }

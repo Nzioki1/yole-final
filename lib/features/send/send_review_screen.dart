@@ -57,8 +57,11 @@ class _SendReviewScreenState extends ConsumerState<SendReviewScreen> {
     // Track payment method selection
     ref
         .read(analyticsProvider)
-        .paymentMethodSelected(
-          method: method == PaymentMethod.card ? 'card' : 'mpesa',
+        .trackEvent(
+          'payment_method_selected',
+          parameters: {
+            'method': method == PaymentMethod.card ? 'card' : 'mpesa',
+          },
         );
 
     // Check M-Pesa limits when M-Pesa is selected

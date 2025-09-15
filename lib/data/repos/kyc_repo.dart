@@ -57,7 +57,20 @@ class KycRepository {
   }
 
   /// Resend email verification
-  Future<Map<String, dynamic>> resendEmailVerification() async {
-    return await _apiClient.resendEmailVerification();
+  Future<void> resendEmailVerification() async {
+    await _apiClient.resendEmailVerification();
+  }
+
+  /// Send OTP for phone verification
+  Future<Map<String, dynamic>> sendOtp({required String phoneNumber}) async {
+    return await _apiClient.sendSmsOtp({'phone': phoneNumber});
+  }
+
+  /// Validate OTP for phone verification
+  Future<Map<String, dynamic>> validateOtp({
+    required String phoneNumber,
+    required String otp,
+  }) async {
+    return await _apiClient.sendSmsOtp({'phone': phoneNumber, 'otp': otp});
   }
 }

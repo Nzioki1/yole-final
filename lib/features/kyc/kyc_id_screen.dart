@@ -6,6 +6,7 @@ import '../../core/theme/tokens_spacing.dart';
 import '../../core/theme/tokens_radius.dart';
 import '../../data/repos/kyc_repo.dart';
 import '../../data/api/yole_api_client.dart';
+import '../../data/api/yole_api_client.dart';
 
 /// KYC ID capture screen
 ///
@@ -29,7 +30,7 @@ class _KycIdScreenState extends ConsumerState<KycIdScreen> {
   String? _frontImagePath;
   String? _backImagePath;
 
-  final KycRepository _kycRepo = const KycRepository(YoleApiClient.create());
+  final KycRepository _kycRepo = KycRepository(createYoleApiClient());
 
   @override
   void dispose() {
@@ -64,11 +65,10 @@ class _KycIdScreenState extends ConsumerState<KycIdScreen> {
     try {
       await _kycRepo.validateKyc(
         phoneNumber: '', // TODO: Get from previous screens
-        otp: '', // TODO: Get from previous screens
+        otpCode: '', // TODO: Get from previous screens
         idNumber: _idNumberController.text.trim(),
-        idType: _selectedIdType!,
-        frontImage: _frontImagePath!,
-        backImage: _backImagePath,
+        idFrontImage: _frontImagePath!,
+        idBackImage: _backImagePath,
       );
 
       if (mounted) {
@@ -422,7 +422,7 @@ class _KycIdScreenState extends ConsumerState<KycIdScreen> {
                 GradientButton(
                   onPressed: _isLoading ? null : _submitKyc,
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(

@@ -29,20 +29,20 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("release") {
             // Turn off shrinking for now; add rules and re-enable later if needed
-            minifyEnabled = false
-            shrinkResources = false
+            isMinifyEnabled = false
+            isShrinkResources = false
             // proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
             // TEMP signing so `flutter run --release` works;
             // replace with your release keystore before publishing
             signingConfig = signingConfigs.getByName("debug")
         }
-        debug {
+        getByName("debug") {
             // example debug customizations if needed:
             // applicationIdSuffix = ".debug"
-            // debuggable = true
+            // isDebuggable = true
         }
     }
 

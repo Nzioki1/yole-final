@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'core/theme/theme_extensions.dart';
-import 'core/theme/tokens_radius.dart';
+import '../design/theme.dart';
+import '../design/tokens.dart';
+import '../design/typography.dart';
 import 'pressable.dart';
 
 /// Gradient button with primary CTA styling
@@ -30,12 +31,17 @@ class GradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final gradientColors = Theme.of(context).extension<GradientColors>();
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    if (gradientColors == null) {
-      // Fallback if gradient colors not available
-      return FilledButton(onPressed: enabled ? onPressed : null, child: child);
-    }
+    final gradient = LinearGradient(
+      colors: [
+        isDark ? DesignTokens.darkPrimary : DesignTokens.primary,
+        isDark
+            ? DesignTokens.darkPrimary.withOpacity(0.8)
+            : DesignTokens.primary.withOpacity(0.8),
+      ],
+    );
 
     return Pressable(
       onPressed: enabled ? onPressed : null,
@@ -44,24 +50,21 @@ class GradientButton extends StatelessWidget {
         height: 56, // PRD: 56dp height
         constraints: BoxConstraints(minWidth: minWidth ?? 0),
         decoration: BoxDecoration(
-          gradient: gradientColors.primaryGradient,
-          borderRadius: RadiusTokens.pillAll, // PRD: 20dp radius (pill)
+          gradient: gradient,
+          borderRadius: DesignTokens.radiusPillAll, // PRD: pill radius
         ),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
             onTap: enabled ? onPressed : null,
-            borderRadius: RadiusTokens.pillAll,
+            borderRadius: DesignTokens.radiusPillAll,
             child: Center(
               child: DefaultTextStyle(
-                style:
-                    Theme.of(
-                      context,
-                    ).textTheme.labelLarge?.copyWith(color: Colors.white) ??
-                    const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
+                style: AppTypography.buttonLarge.copyWith(
+                  color: isDark
+                      ? DesignTokens.darkOnPrimary
+                      : DesignTokens.onPrimary,
+                ),
                 child: child,
               ),
             ),

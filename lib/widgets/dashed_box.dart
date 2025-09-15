@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dotted_border/dotted_border.dart';
-import 'core/theme/tokens_radius.dart';
-import 'core/theme/tokens_spacing.dart';
+import '../core/theme/tokens_radius.dart';
+import '../core/theme/tokens_spacing.dart';
 
 /// Dashed border container with dotted_border
 ///

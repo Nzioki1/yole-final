@@ -31,7 +31,7 @@ class SendFailureScreen extends ConsumerWidget {
   final String orderTrackingId;
   final String? errorMessage;
 
-  void _retryPayment() {
+  void _retryPayment(BuildContext context) {
     // TODO: Implement retry payment functionality
     // This would typically involve re-initiating the payment flow
     context.go(
@@ -45,7 +45,7 @@ class SendFailureScreen extends ConsumerWidget {
     );
   }
 
-  void _changePaymentMethod() {
+  void _changePaymentMethod(BuildContext context) {
     // Navigate back to review screen to change payment method
     context.go(
       '/send/review',
@@ -58,7 +58,7 @@ class SendFailureScreen extends ConsumerWidget {
     );
   }
 
-  void _goToDashboard() {
+  void _goToDashboard(BuildContext context) {
     context.go('/home');
   }
 
@@ -135,24 +135,28 @@ class SendFailureScreen extends ConsumerWidget {
                 child: Column(
                   children: [
                     _buildDetailRow(
+                      context,
                       'Recipient',
                       recipientName,
                       colorScheme.onSurface,
                     ),
                     const SizedBox(height: 8),
                     _buildDetailRow(
+                      context,
                       'Phone',
                       recipientPhone,
                       colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(height: 8),
                     _buildDetailRow(
+                      context,
                       'Amount',
                       _formatCurrency(sendingAmount),
                       colorScheme.onSurface,
                     ),
                     const Divider(height: 24),
                     _buildDetailRow(
+                      context,
                       'Transaction ID',
                       orderTrackingId,
                       colorScheme.onSurfaceVariant,
@@ -169,7 +173,7 @@ class SendFailureScreen extends ConsumerWidget {
                 children: [
                   Expanded(
                     child: Pressable(
-                      onPressed: _changePaymentMethod,
+                      onPressed: () => _changePaymentMethod(context),
                       child: Container(
                         padding: SpacingTokens.lgAll,
                         decoration: BoxDecoration(
@@ -203,7 +207,7 @@ class SendFailureScreen extends ConsumerWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Pressable(
-                      onPressed: _retryPayment,
+                      onPressed: () => _retryPayment(context),
                       child: Container(
                         padding: SpacingTokens.lgAll,
                         decoration: BoxDecoration(
@@ -243,7 +247,7 @@ class SendFailureScreen extends ConsumerWidget {
               SizedBox(
                 width: double.infinity,
                 child: GradientButton(
-                  onPressed: _goToDashboard,
+                  onPressed: () => _goToDashboard(context),
                   child: Text(
                     'Done',
                     style: textTheme.labelLarge?.copyWith(
@@ -260,6 +264,7 @@ class SendFailureScreen extends ConsumerWidget {
   }
 
   Widget _buildDetailRow(
+    BuildContext context,
     String label,
     String value,
     Color textColor, {

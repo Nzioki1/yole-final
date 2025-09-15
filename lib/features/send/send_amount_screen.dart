@@ -100,9 +100,12 @@ class _SendAmountScreenState extends ConsumerState<SendAmountScreen> {
     // Track quote request
     ref
         .read(analyticsProvider)
-        .quoteRequested(
-          amountUsd: amount,
-          recipientCountry: 'CD', // DR Congo
+        .trackEvent(
+          'quote_requested',
+          parameters: {
+            'amount_usd': amount,
+            'recipient_country': 'CD', // DR Congo
+          },
         );
 
     try {
@@ -126,10 +129,13 @@ class _SendAmountScreenState extends ConsumerState<SendAmountScreen> {
       // Track successful quote
       ref
           .read(analyticsProvider)
-          .quoteReceived(
-            amountUsd: amount,
-            feeUsd: yoleFee,
-            receiveAmountUsd: receiveAmount,
+          .trackEvent(
+            'quote_received',
+            parameters: {
+              'amount_usd': amount,
+              'fee_usd': yoleFee,
+              'receive_amount_usd': receiveAmount,
+            },
           );
     } catch (e) {
       setState(() {
@@ -140,7 +146,10 @@ class _SendAmountScreenState extends ConsumerState<SendAmountScreen> {
       // Track failed quote
       ref
           .read(analyticsProvider)
-          .quoteFailed(amountUsd: amount, error: e.toString());
+          .trackEvent(
+            'quote_failed',
+            parameters: {'amount_usd': amount, 'error': e.toString()},
+          );
     }
   }
 

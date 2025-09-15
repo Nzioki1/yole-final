@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'core/theme/tokens_spacing.dart';
+import '../core/theme/tokens_spacing.dart';
 
 /// 4-step progress indicator with dots
 ///

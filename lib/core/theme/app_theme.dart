@@ -169,8 +169,8 @@ class YoleTheme {
   }
 
   /// Build card theme
-  static CardTheme _buildCardTheme(ColorScheme colorScheme) {
-    return CardTheme(
+  static CardThemeData _buildCardTheme(ColorScheme colorScheme) {
+    return CardThemeData(
       color: colorScheme.surface,
       elevation: 0,
       shape: RoundedRectangleBorder(

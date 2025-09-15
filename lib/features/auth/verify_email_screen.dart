@@ -25,7 +25,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
   bool _isResending = false;
   bool _isVerified = false;
 
-  final AuthRepository _authRepo = const AuthRepository(YoleApiClient.create());
+  final AuthRepository _authRepo = AuthRepository(createYoleApiClient());
 
   Future<void> _resendVerification() async {
     setState(() {
@@ -191,7 +191,7 @@ class _VerifyEmailScreenState extends ConsumerState<VerifyEmailScreen> {
                 GradientButton(
                   onPressed: _isResending ? null : _resendVerification,
                   child: _isResending
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(

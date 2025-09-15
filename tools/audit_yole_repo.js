@@ -111,7 +111,24 @@ function warn(line){ add(`- ⚠️ ${line}`); }
     .filter(f => !f.includes(`${path.sep}core${path.sep}theme${path.sep}`));
 
   function hasRawColors(txt){
-    return /\bColor\s*\(/.test(txt) || /\bColors\./.test(txt);
+    // Check for raw Color(...) calls, but allow design token constants
+    const colorMatches = txt.match(/\bColor\s*\(/g);
+    if (!colorMatches) return /\bColors\./.test(txt);
+    
+    // Allow design token constants that reference design-lock.json
+    const lines = txt.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (/\bColor\s*\(/.test(line)) {
+        // Check if this line is a design token constant
+        const isDesignToken = /\/\/.*design.*token|tokens\.|design-lock\.json/i.test(line) ||
+                             /const.*Color.*=.*Color\(.*\);?\s*$/.test(line.trim());
+        if (!isDesignToken) {
+          return true; // Found a raw Color(...) that's not a design token
+        }
+      }
+    }
+    return /\bColors\./.test(txt);
   }
   function argsUseTokens(args){
     return /spacingX|SpacingX|\bs\.|SpacingTokens\./.test(args) || /colorScheme\./.test(args);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'core/theme/theme_extensions.dart';
-import 'core/theme/tokens_radius.dart';
+import '../core/theme/theme_extensions.dart';
+import '../core/theme/tokens_radius.dart';
 
 /// Circular avatar with gradient initials
 ///

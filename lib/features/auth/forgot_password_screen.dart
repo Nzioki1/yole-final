@@ -6,6 +6,7 @@ import '../../core/theme/tokens_spacing.dart';
 import '../../core/theme/tokens_radius.dart';
 import '../../data/repos/auth_repo.dart';
 import '../../data/api/yole_api_client.dart';
+import '../../data/api/yole_api_client.dart';
 
 /// Forgot password screen
 ///
@@ -27,7 +28,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
   bool _isLoading = false;
 
-  final AuthRepository _authRepo = const AuthRepository(YoleApiClient.create());
+  final AuthRepository _authRepo = AuthRepository(createYoleApiClient());
 
   @override
   void dispose() {
@@ -146,7 +147,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 GradientButton(
                   onPressed: _isLoading ? null : _requestPasswordReset,
                   child: _isLoading
-                      ? const SizedBox(
+                      ? SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(

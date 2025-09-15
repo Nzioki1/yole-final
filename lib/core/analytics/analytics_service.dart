@@ -1,211 +1,208 @@
-import 'dart:io';
-import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'analytics.dart';
 
-/// Analytics service for tracking user events
+/// Analytics service implementation using the Analytics interface
 ///
-/// Events are defined in PRD Section 14: Analytics (Client Events)
-/// For now, prints to debug console unless ANALYTICS_DSN is present in .env
-class AnalyticsService {
+/// This service provides a centralized way to track user interactions
+/// and app events. It uses the Analytics interface to allow easy swapping
+/// between fake (for tests) and real (Firebase) implementations.
+class AnalyticsService implements Analytics {
   static final AnalyticsService _instance = AnalyticsService._internal();
   factory AnalyticsService() => _instance;
   AnalyticsService._internal();
 
-  String? _dsn;
-  bool _isInitialized = false;
+  /// The underlying analytics implementation
+  Analytics _analytics = FakeAnalytics();
 
-  /// Initialize the analytics service
-  /// Checks for ANALYTICS_DSN in environment variables
-  Future<void> initialize() async {
-    if (_isInitialized) return;
-
-    // In a real implementation, you'd load from .env file
-    // For now, we'll check if we're in debug mode
-    _dsn = kDebugMode ? null : Platform.environment['ANALYTICS_DSN'];
-    _isInitialized = true;
-
-    if (_dsn != null) {
-      debugPrint('Analytics initialized with DSN');
-    } else {
-      debugPrint('Analytics initialized in debug mode (console logging)');
-    }
+  /// Initialize the analytics service with a specific implementation
+  void initialize(Analytics analytics) {
+    _analytics = analytics;
   }
 
-  /// Track an analytics event
-  ///
-  /// [eventName] - The event name from PRD
-  /// [properties] - Optional event properties
-  void track(String eventName, {Map<String, dynamic>? properties}) {
-    if (!_isInitialized) {
-      debugPrint('Analytics not initialized, skipping event: $eventName');
-      return;
-    }
+  /// Get the current analytics implementation (for testing)
+  Analytics get implementation => _analytics;
 
-    final event = {
-      'event': eventName,
-      'timestamp': DateTime.now().toIso8601String(),
-      'properties': properties ?? {},
-    };
-
-    if (_dsn != null) {
-      // In a real implementation, send to analytics service
-      _sendToAnalyticsService(event);
-    } else {
-      // Debug mode - print to console
-      debugPrint('📊 Analytics Event: $eventName');
-      if (properties != null && properties.isNotEmpty) {
-        debugPrint('   Properties: $properties');
-      }
-    }
+  @override
+  Future<void> logEvent(String name, [Map<String, dynamic>? params]) async {
+    await _analytics.logEvent(name, params);
   }
 
-  /// Send event to analytics service (placeholder)
-  void _sendToAnalyticsService(Map<String, dynamic> event) {
-    // TODO: Implement actual analytics service integration
-    // This could be Firebase Analytics, Mixpanel, Amplitude, etc.
-    debugPrint('📊 [ANALYTICS] $event');
+  @override
+  Future<void> logScreenView(
+    String screenName, [
+    Map<String, dynamic>? params,
+  ]) async {
+    await _analytics.logScreenView(screenName, params);
   }
 
-  // Auth Events
-  void authRegisterSuccess({String? userId}) {
-    track(
-      'auth_register_success',
-      properties: {if (userId != null) 'user_id': userId},
-    );
+  @override
+  Future<void> logUserAction(
+    String action, [
+    Map<String, dynamic>? params,
+  ]) async {
+    await _analytics.logUserAction(action, params);
   }
 
-  void authLoginSuccess({String? userId}) {
-    track(
-      'auth_login_success',
-      properties: {if (userId != null) 'user_id': userId},
-    );
+  @override
+  Future<void> logError(String error, [Map<String, dynamic>? params]) async {
+    await _analytics.logError(error, params);
   }
 
-  // KYC Events
-  void kycSubmitted({String? step}) {
-    track('kyc_submitted', properties: {if (step != null) 'step': step});
+  @override
+  Future<void> setUserProperties(Map<String, dynamic> properties) async {
+    await _analytics.setUserProperties(properties);
   }
 
-  // Email Events
-  void emailVerificationSent() {
-    track('email_verification_sent');
+  @override
+  Future<void> setUserId(String userId) async {
+    await _analytics.setUserId(userId);
   }
 
-  void emailVerified() {
-    track('email_verified');
+  // Legacy methods for backward compatibility
+  /// Track a custom event (legacy method)
+  void trackEvent(String eventName, {Map<String, dynamic>? parameters}) {
+    logEvent(eventName, parameters);
   }
 
-  // Quote Events
-  void quoteRequested({
-    required double amountUsd,
-    required String recipientCountry,
-  }) {
-    track(
-      'quote_requested',
-      properties: {
-        'amount_usd': amountUsd,
-        'recipient_country': recipientCountry,
-      },
-    );
+  /// Track screen view (legacy method)
+  void trackScreenView(String screenName, {Map<String, dynamic>? parameters}) {
+    logScreenView(screenName, parameters);
   }
 
-  void quoteReceived({
-    required double amountUsd,
-    required double feeUsd,
-    required double receiveAmountUsd,
-  }) {
-    track(
-      'quote_received',
-      properties: {
-        'amount_usd': amountUsd,
-        'fee_usd': feeUsd,
-        'receive_amount_usd': receiveAmountUsd,
-      },
-    );
+  /// Track user action (legacy method)
+  void trackUserAction(String action, {Map<String, dynamic>? parameters}) {
+    logUserAction(action, parameters);
   }
 
-  void quoteFailed({required double amountUsd, String? error}) {
-    track(
-      'quote_failed',
-      properties: {'amount_usd': amountUsd, if (error != null) 'error': error},
-    );
+  /// Track error (legacy method)
+  void trackError(String error, {Map<String, dynamic>? parameters}) {
+    logError(error, parameters);
   }
 
-  // Send Events
-  void sendInitiated({
-    required double amountUsd,
-    required String recipientCountry,
-  }) {
-    track(
-      'send_initiated',
-      properties: {
-        'amount_usd': amountUsd,
-        'recipient_country': recipientCountry,
-      },
-    );
+  /// Track auth login success (legacy method)
+  void authLoginSuccess() {
+    logUserAction('auth_login_success');
   }
 
-  void paymentMethodSelected({required String method}) {
-    track(
-      'payment_method_selected',
-      properties: {
-        'method': method, // 'card' or 'mpesa'
-      },
-    );
-  }
-
-  void sendConfirmed({
-    required double amountUsd,
-    required String paymentMethod,
-  }) {
-    track(
-      'send_confirmed',
-      properties: {'amount_usd': amountUsd, 'payment_method': paymentMethod},
-    );
-  }
-
-  void sendSuccess({required String transactionId, required double amountUsd}) {
-    track(
-      'send_success',
-      properties: {'transaction_id': transactionId, 'amount_usd': amountUsd},
-    );
-  }
-
-  void sendFailed({required double amountUsd, String? error}) {
-    track(
-      'send_failed',
-      properties: {'amount_usd': amountUsd, if (error != null) 'error': error},
-    );
-  }
-
-  // Transaction Events
-  void statusRefreshClicked({required String transactionId}) {
-    track(
-      'status_refresh_clicked',
-      properties: {'transaction_id': transactionId},
-    );
-  }
-
-  void repeatSendClicked({required String transactionId}) {
-    track('repeat_send_clicked', properties: {'transaction_id': transactionId});
-  }
-
-  void favoriteSendClicked({required String transactionId}) {
-    track(
-      'favorite_send_clicked',
-      properties: {'transaction_id': transactionId},
-    );
-  }
-
-  // Settings Events
-  void toggleDarkMode() {
-    track('toggle_dark_mode');
-  }
-
-  void toggleLightMode() {
-    track('toggle_light_mode');
-  }
-
-  void toggleBiometrics({required bool enabled}) {
-    track('toggle_biometrics', properties: {'enabled': enabled});
+  /// Track auth register success (legacy method)
+  void authRegisterSuccess() {
+    logUserAction('auth_register_success');
   }
 }
+
+/// Analytics events for the Send Money flow
+class SendFlowAnalytics {
+  static const String _prefix = 'send_';
+
+  /// Track when a user views a step in the send flow
+  static void trackStepViewed(String step) {
+    AnalyticsService().trackEvent(
+      '${_prefix}step_viewed',
+      parameters: {'step': step},
+    );
+  }
+
+  /// Track when a user submits the send flow
+  static void trackSubmit({
+    required String fromCurrency,
+    required String toCurrency,
+    required double amount,
+    required String network,
+    required String recipientType,
+  }) {
+    AnalyticsService().trackEvent(
+      '${_prefix}submit',
+      parameters: {
+        'from_currency': fromCurrency,
+        'to_currency': toCurrency,
+        'amount': amount,
+        'network': network,
+        'recipient_type': recipientType,
+      },
+    );
+  }
+
+  /// Track when an error occurs in the send flow
+  static void trackError(String code, {String? step, String? message}) {
+    AnalyticsService().trackEvent(
+      '${_prefix}error',
+      parameters: {
+        'error_code': code,
+        if (step != null) 'step': step,
+        if (message != null) 'message': message,
+      },
+    );
+  }
+
+  /// Track when a user cancels the send flow
+  static void trackCancel({String? step}) {
+    AnalyticsService().trackEvent(
+      '${_prefix}cancel',
+      parameters: {if (step != null) 'step': step},
+    );
+  }
+
+  /// Track when a user completes the send flow successfully
+  static void trackSuccess({
+    required String fromCurrency,
+    required String toCurrency,
+    required double amount,
+    required String network,
+    required String recipientType,
+    required String transactionId,
+  }) {
+    AnalyticsService().trackEvent(
+      '${_prefix}success',
+      parameters: {
+        'from_currency': fromCurrency,
+        'to_currency': toCurrency,
+        'amount': amount,
+        'network': network,
+        'recipient_type': recipientType,
+        'transaction_id': transactionId,
+      },
+    );
+  }
+
+  /// Track when a user selects a network
+  static void trackNetworkSelected(String network) {
+    AnalyticsService().trackEvent(
+      '${_prefix}network_selected',
+      parameters: {'network': network},
+    );
+  }
+
+  /// Track when a user selects a currency
+  static void trackCurrencySelected(String currency) {
+    AnalyticsService().trackEvent(
+      '${_prefix}currency_selected',
+      parameters: {'currency': currency},
+    );
+  }
+
+  /// Track when a user enters an amount
+  static void trackAmountEntered(double amount, String currency) {
+    AnalyticsService().trackEvent(
+      '${_prefix}amount_entered',
+      parameters: {'amount': amount, 'currency': currency},
+    );
+  }
+
+  /// Track when a user selects a recipient
+  static void trackRecipientSelected(String recipientType) {
+    AnalyticsService().trackEvent(
+      '${_prefix}recipient_selected',
+      parameters: {'recipient_type': recipientType},
+    );
+  }
+
+  /// Track user action (legacy method)
+  static void trackUserAction(String action) {
+    AnalyticsService().logUserAction(action);
+  }
+}
+
+/// Provider for analytics service
+final analyticsServiceProvider = Provider<AnalyticsService>((ref) {
+  return AnalyticsService();
+});

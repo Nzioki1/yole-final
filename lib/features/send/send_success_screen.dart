@@ -34,11 +34,11 @@ class SendSuccessScreen extends ConsumerWidget {
     // Share transaction details via system share sheet
   }
 
-  void _repeatSend() {
+  void _repeatSend(BuildContext context) {
     context.go('/send/recipient');
   }
 
-  void _goToDashboard() {
+  void _goToDashboard(BuildContext context) {
     context.go('/home');
   }
 
@@ -114,24 +114,28 @@ class SendSuccessScreen extends ConsumerWidget {
                 child: Column(
                   children: [
                     _buildDetailRow(
+                      context,
                       'Sent to',
                       recipientName,
                       colorScheme.onSurface,
                     ),
                     const SizedBox(height: 8),
                     _buildDetailRow(
+                      context,
                       'Phone',
                       recipientPhone,
                       colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(height: 8),
                     _buildDetailRow(
+                      context,
                       'Amount sent',
                       _formatCurrency(sendingAmount),
                       colorScheme.onSurface,
                     ),
                     const SizedBox(height: 8),
                     _buildDetailRow(
+                      context,
                       'Amount received',
                       _formatCurrency(receiveAmount),
                       colorScheme.primary,
@@ -139,6 +143,7 @@ class SendSuccessScreen extends ConsumerWidget {
                     ),
                     const Divider(height: 24),
                     _buildDetailRow(
+                      context,
                       'Transaction ID',
                       orderTrackingId,
                       colorScheme.onSurfaceVariant,
@@ -189,7 +194,7 @@ class SendSuccessScreen extends ConsumerWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Pressable(
-                      onPressed: _repeatSend,
+                      onPressed: () => _repeatSend(context),
                       child: Container(
                         padding: SpacingTokens.lgAll,
                         decoration: BoxDecoration(
@@ -229,7 +234,7 @@ class SendSuccessScreen extends ConsumerWidget {
               SizedBox(
                 width: double.infinity,
                 child: GradientButton(
-                  onPressed: _goToDashboard,
+                  onPressed: () => _goToDashboard(context),
                   child: Text(
                     'Done',
                     style: textTheme.labelLarge?.copyWith(
@@ -246,6 +251,7 @@ class SendSuccessScreen extends ConsumerWidget {
   }
 
   Widget _buildDetailRow(
+    BuildContext context,
     String label,
     String value,
     Color textColor, {

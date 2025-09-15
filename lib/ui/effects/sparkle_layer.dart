@@ -2,20 +2,46 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../../design/tokens.dart';
 
+/// Quality levels for sparkle animations
+enum SparkleQuality {
+  /// Low quality - minimal particles for performance
+  low,
+  /// Medium quality - balanced particles and performance
+  medium,
+  /// High quality - maximum particles for visual impact
+  high,
+}
+
+/// Extension to get particle count from quality level
+extension SparkleQualityExtension on SparkleQuality {
+  int get particleCount {
+    switch (this) {
+      case SparkleQuality.low:
+        return 10;
+      case SparkleQuality.medium:
+        return 20;
+      case SparkleQuality.high:
+        return 40;
+    }
+  }
+}
+
 /// A GPU-friendly animated sparkle layer that overlays content with animated particles.
 ///
 /// Features:
-/// - Adjustable particle frequency and alpha
+/// - Quality-based particle count (low/med/high)
+/// - RepaintBoundary for performance optimization
 /// - Pauses animation when app goes to background
 /// - Overlays background content
 /// - Performance budget monitoring
 /// - Low-power mode detection
+/// - Static frame support for golden tests
 class SparkleLayer extends StatefulWidget {
   /// The child widget to overlay with sparkles
   final Widget child;
 
-  /// Number of sparkles to animate (default: 20)
-  final int particleCount;
+  /// Quality level that determines particle count
+  final SparkleQuality quality;
 
   /// Animation speed multiplier (default: 1.0)
   final double animationSpeed;
@@ -29,14 +55,18 @@ class SparkleLayer extends StatefulWidget {
   /// Whether sparkles are currently enabled
   final bool enabled;
 
+  /// For golden tests: freeze animation at this duration
+  final Duration? staticFrame;
+
   const SparkleLayer({
     super.key,
     required this.child,
-    this.particleCount = 20,
+    this.quality = SparkleQuality.medium,
     this.animationSpeed = 1.0,
     this.baseAlpha = 0.6,
     this.enableLowPowerMode = true,
     this.enabled = true,
+    this.staticFrame,
   });
 
   @override
@@ -73,7 +103,7 @@ class _SparkleLayerState extends State<SparkleLayer>
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.enabled != widget.enabled ||
-        oldWidget.particleCount != widget.particleCount ||
+        oldWidget.quality != widget.quality ||
         oldWidget.animationSpeed != widget.animationSpeed) {
       _initializeParticles();
       _controller.duration = Duration(
@@ -124,7 +154,8 @@ class _SparkleLayerState extends State<SparkleLayer>
 
   void _initializeParticles() {
     final random = math.Random();
-    _particles = List.generate(widget.particleCount, (index) {
+    final particleCount = widget.quality.particleCount;
+    _particles = List.generate(particleCount, (index) {
       return SparkleParticle(
         x: random.nextDouble(),
         y: random.nextDouble(),
@@ -144,19 +175,33 @@ class _SparkleLayerState extends State<SparkleLayer>
 
     return Stack(
       children: [
-        widget.child,
-        AnimatedBuilder(
-          animation: _controller,
-          builder: (context, child) {
-            return CustomPaint(
-              painter: SparklePainter(
-                particles: _particles,
-                animationValue: _controller.value,
-                animationSpeed: widget.animationSpeed,
-              ),
-              size: Size.infinite,
-            );
-          },
+        // Child content wrapped in RepaintBoundary for performance
+        RepaintBoundary(
+          child: widget.child,
+        ),
+        // Sparkle effects wrapped in RepaintBoundary to isolate repaints
+        RepaintBoundary(
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              // Handle static frame for golden tests
+              double animationValue = _controller.value;
+              if (widget.staticFrame != null) {
+                final totalDuration = _controller.duration!;
+                final staticRatio = widget.staticFrame!.inMilliseconds / totalDuration.inMilliseconds;
+                animationValue = staticRatio.clamp(0.0, 1.0);
+              }
+
+              return CustomPaint(
+                painter: SparklePainter(
+                  particles: _particles,
+                  animationValue: animationValue,
+                  animationSpeed: widget.animationSpeed,
+                ),
+                size: Size.infinite,
+              );
+            },
+          ),
         ),
       ],
     );

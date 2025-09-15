@@ -1,0 +1,99 @@
+name: Performance Tests
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'lib/**'
+      - 'test/perf/**'
+      - 'test/_harness/**'
+      - '.github/workflows/performance.yml'
+  workflow_dispatch:
+
+jobs:
+  performance-test:
+    name: Performance Budget Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+        cache: true
+        
+    - name: Install dependencies
+      run: flutter pub get
+      
+    - name: Verify Flutter installation
+      run: flutter doctor
+      
+    - name: Run performance tests
+      run: flutter test test/perf/frame_budget_test.dart --reporter=expanded
+      
+    - name: Run performance tests with coverage
+      run: flutter test test/perf/frame_budget_test.dart --coverage
+      
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: coverage/lcov.info
+        flags: performance
+        name: performance-coverage
+        fail_ci_if_error: false
+        
+    - name: Performance test results
+      if: always()
+      run: |
+        echo "Performance tests completed"
+        echo "Check the logs above for detailed performance metrics"
+        echo "Budget: 18.0ms per frame"
+        echo "Target: 60fps performance"
+
+  performance-benchmark:
+    name: Performance Benchmark
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.0'
+        channel: 'stable'
+        cache: true
+        
+    - name: Install dependencies
+      run: flutter pub get
+      
+    - name: Run comprehensive performance benchmark
+      run: |
+        echo "Running comprehensive performance benchmark..."
+        flutter test test/perf/frame_budget_test.dart --reporter=expanded
+        
+        echo "Performance benchmark completed"
+        echo "Results saved to test output"
+        
+    - name: Generate performance report
+      run: |
+        echo "# Performance Benchmark Report" > performance_report.md
+        echo "Generated on: $(date)" >> performance_report.md
+        echo "" >> performance_report.md
+        echo "## Test Results" >> performance_report.md
+        echo "Budget: 18.0ms per frame" >> performance_report.md
+        echo "Target: 60fps performance" >> performance_report.md
+        echo "" >> performance_report.md
+        echo "Check the test logs above for detailed metrics." >> performance_report.md
+        
+    - name: Upload performance report
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-report
+        path: performance_report.md

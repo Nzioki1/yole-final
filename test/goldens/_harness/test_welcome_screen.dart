@@ -93,8 +93,10 @@ class _TestWelcomeScreenState extends State<TestWelcomeScreen>
     return Scaffold(
       backgroundColor: DesignTokens.background,
       body: SparkleLayer(
+            staticFrame: const Duration(milliseconds: 300), // Static for golden test
+            
         enabled: widget.enableSparkles && !_isLowPowerMode,
-        particleCount: 25,
+        quality: SparkleQuality.medium,
         animationSpeed: 1.2,
         baseAlpha: 0.7,
         child: SafeArea(

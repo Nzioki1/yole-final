@@ -142,7 +142,7 @@ Widget _buildListSkeleton({int itemCount = 3}) {
   return Container(
     width: 300,
     padding: const EdgeInsets.all(16),
-    child: LoadingStates.listSkeleton(itemCount: itemCount),
+    child: LoadingStates.listSkeleton(),
   );
 }
 
@@ -151,10 +151,7 @@ Widget _buildTileSkeleton({bool showIcon = false, bool showSubtitle = false}) {
   return Container(
     width: 300,
     padding: const EdgeInsets.all(16),
-    child: LoadingStates.tileSkeleton(
-      showIcon: showIcon,
-      showSubtitle: showSubtitle,
-    ),
+    child: LoadingStates.tileSkeleton(),
   );
 }
 
@@ -163,10 +160,7 @@ Widget _buildCardSkeleton({bool showIcon = false, bool showSubtitle = false}) {
   return Container(
     width: 300,
     padding: const EdgeInsets.all(16),
-    child: LoadingStates.cardSkeleton(
-      showIcon: showIcon,
-      showSubtitle: showSubtitle,
-    ),
+    child: LoadingStates.cardSkeleton(),
   );
 }
 

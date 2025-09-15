@@ -76,6 +76,9 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  
+  # Testing utilities
+  mocktail: ^1.0.3
 
   # Golden testing
   golden_toolkit: ^0.15.0

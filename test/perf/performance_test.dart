@@ -13,7 +13,7 @@ void main() {
         home: Scaffold(
           body: SparkleLayer(
             enabled: false, // Disable animations for performance testing
-            particleCount: 25,
+            quality: SparkleQuality.medium,
             animationSpeed: 1.0,
             baseAlpha: 0.7,
             child: Container(
@@ -66,7 +66,7 @@ void main() {
         home: Scaffold(
           body: SparkleLayer(
             enabled: false, // Simulate low power mode
-            particleCount: 25,
+            quality: SparkleQuality.medium,
             animationSpeed: 1.0,
             baseAlpha: 0.7,
             child: Container(

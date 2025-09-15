@@ -305,7 +305,7 @@ as bool,
 /// @nodoc
 mixin _$NetworkInfo {
 
- String get id; String get name; NetworkType get type; String get country; String get currency; double get minAmount; double get maxAmount; double get feePercentage; double get fixedFee; int get processingTimeMinutes; bool get isActive; bool get isRecommended;
+ String get id; String get name; NetworkType get type; String get country; String get currency; double get minAmount; double get maxAmount; double get feePercentage; double get fixedFee; int get processingTimeMinutes; bool get isActive; bool get isRecommended; String? get logoUrl; String? get unavailabilityReason; String? get requiredCurrency;
 /// Create a copy of NetworkInfo
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -318,16 +318,16 @@ $NetworkInfoCopyWith<NetworkInfo> get copyWith => _$NetworkInfoCopyWithImpl<Netw
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is NetworkInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.country, country) || other.country == country)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.minAmount, minAmount) || other.minAmount == minAmount)&&(identical(other.maxAmount, maxAmount) || other.maxAmount == maxAmount)&&(identical(other.feePercentage, feePercentage) || other.feePercentage == feePercentage)&&(identical(other.fixedFee, fixedFee) || other.fixedFee == fixedFee)&&(identical(other.processingTimeMinutes, processingTimeMinutes) || other.processingTimeMinutes == processingTimeMinutes)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isRecommended, isRecommended) || other.isRecommended == isRecommended));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is NetworkInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.country, country) || other.country == country)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.minAmount, minAmount) || other.minAmount == minAmount)&&(identical(other.maxAmount, maxAmount) || other.maxAmount == maxAmount)&&(identical(other.feePercentage, feePercentage) || other.feePercentage == feePercentage)&&(identical(other.fixedFee, fixedFee) || other.fixedFee == fixedFee)&&(identical(other.processingTimeMinutes, processingTimeMinutes) || other.processingTimeMinutes == processingTimeMinutes)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isRecommended, isRecommended) || other.isRecommended == isRecommended)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.unavailabilityReason, unavailabilityReason) || other.unavailabilityReason == unavailabilityReason)&&(identical(other.requiredCurrency, requiredCurrency) || other.requiredCurrency == requiredCurrency));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,type,country,currency,minAmount,maxAmount,feePercentage,fixedFee,processingTimeMinutes,isActive,isRecommended);
+int get hashCode => Object.hash(runtimeType,id,name,type,country,currency,minAmount,maxAmount,feePercentage,fixedFee,processingTimeMinutes,isActive,isRecommended,logoUrl,unavailabilityReason,requiredCurrency);
 
 @override
 String toString() {
-  return 'NetworkInfo(id: $id, name: $name, type: $type, country: $country, currency: $currency, minAmount: $minAmount, maxAmount: $maxAmount, feePercentage: $feePercentage, fixedFee: $fixedFee, processingTimeMinutes: $processingTimeMinutes, isActive: $isActive, isRecommended: $isRecommended)';
+  return 'NetworkInfo(id: $id, name: $name, type: $type, country: $country, currency: $currency, minAmount: $minAmount, maxAmount: $maxAmount, feePercentage: $feePercentage, fixedFee: $fixedFee, processingTimeMinutes: $processingTimeMinutes, isActive: $isActive, isRecommended: $isRecommended, logoUrl: $logoUrl, unavailabilityReason: $unavailabilityReason, requiredCurrency: $requiredCurrency)';
 }
 
 
@@ -338,7 +338,7 @@ abstract mixin class $NetworkInfoCopyWith<$Res>  {
   factory $NetworkInfoCopyWith(NetworkInfo value, $Res Function(NetworkInfo) _then) = _$NetworkInfoCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, NetworkType type, String country, String currency, double minAmount, double maxAmount, double feePercentage, double fixedFee, int processingTimeMinutes, bool isActive, bool isRecommended
+ String id, String name, NetworkType type, String country, String currency, double minAmount, double maxAmount, double feePercentage, double fixedFee, int processingTimeMinutes, bool isActive, bool isRecommended, String? logoUrl, String? unavailabilityReason, String? requiredCurrency
 });
 
 
@@ -355,7 +355,7 @@ class _$NetworkInfoCopyWithImpl<$Res>
 
 /// Create a copy of NetworkInfo
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? type = null,Object? country = null,Object? currency = null,Object? minAmount = null,Object? maxAmount = null,Object? feePercentage = null,Object? fixedFee = null,Object? processingTimeMinutes = null,Object? isActive = null,Object? isRecommended = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? type = null,Object? country = null,Object? currency = null,Object? minAmount = null,Object? maxAmount = null,Object? feePercentage = null,Object? fixedFee = null,Object? processingTimeMinutes = null,Object? isActive = null,Object? isRecommended = null,Object? logoUrl = freezed,Object? unavailabilityReason = freezed,Object? requiredCurrency = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -369,7 +369,10 @@ as double,fixedFee: null == fixedFee ? _self.fixedFee : fixedFee // ignore: cast
 as double,processingTimeMinutes: null == processingTimeMinutes ? _self.processingTimeMinutes : processingTimeMinutes // ignore: cast_nullable_to_non_nullable
 as int,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
 as bool,isRecommended: null == isRecommended ? _self.isRecommended : isRecommended // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,logoUrl: freezed == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
+as String?,unavailabilityReason: freezed == unavailabilityReason ? _self.unavailabilityReason : unavailabilityReason // ignore: cast_nullable_to_non_nullable
+as String?,requiredCurrency: freezed == requiredCurrency ? _self.requiredCurrency : requiredCurrency // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -454,10 +457,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  NetworkType type,  String country,  String currency,  double minAmount,  double maxAmount,  double feePercentage,  double fixedFee,  int processingTimeMinutes,  bool isActive,  bool isRecommended)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  NetworkType type,  String country,  String currency,  double minAmount,  double maxAmount,  double feePercentage,  double fixedFee,  int processingTimeMinutes,  bool isActive,  bool isRecommended,  String? logoUrl,  String? unavailabilityReason,  String? requiredCurrency)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _NetworkInfo() when $default != null:
-return $default(_that.id,_that.name,_that.type,_that.country,_that.currency,_that.minAmount,_that.maxAmount,_that.feePercentage,_that.fixedFee,_that.processingTimeMinutes,_that.isActive,_that.isRecommended);case _:
+return $default(_that.id,_that.name,_that.type,_that.country,_that.currency,_that.minAmount,_that.maxAmount,_that.feePercentage,_that.fixedFee,_that.processingTimeMinutes,_that.isActive,_that.isRecommended,_that.logoUrl,_that.unavailabilityReason,_that.requiredCurrency);case _:
   return orElse();
 
 }
@@ -475,10 +478,10 @@ return $default(_that.id,_that.name,_that.type,_that.country,_that.currency,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  NetworkType type,  String country,  String currency,  double minAmount,  double maxAmount,  double feePercentage,  double fixedFee,  int processingTimeMinutes,  bool isActive,  bool isRecommended)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  NetworkType type,  String country,  String currency,  double minAmount,  double maxAmount,  double feePercentage,  double fixedFee,  int processingTimeMinutes,  bool isActive,  bool isRecommended,  String? logoUrl,  String? unavailabilityReason,  String? requiredCurrency)  $default,) {final _that = this;
 switch (_that) {
 case _NetworkInfo():
-return $default(_that.id,_that.name,_that.type,_that.country,_that.currency,_that.minAmount,_that.maxAmount,_that.feePercentage,_that.fixedFee,_that.processingTimeMinutes,_that.isActive,_that.isRecommended);case _:
+return $default(_that.id,_that.name,_that.type,_that.country,_that.currency,_that.minAmount,_that.maxAmount,_that.feePercentage,_that.fixedFee,_that.processingTimeMinutes,_that.isActive,_that.isRecommended,_that.logoUrl,_that.unavailabilityReason,_that.requiredCurrency);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -495,10 +498,10 @@ return $default(_that.id,_that.name,_that.type,_that.country,_that.currency,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  NetworkType type,  String country,  String currency,  double minAmount,  double maxAmount,  double feePercentage,  double fixedFee,  int processingTimeMinutes,  bool isActive,  bool isRecommended)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  NetworkType type,  String country,  String currency,  double minAmount,  double maxAmount,  double feePercentage,  double fixedFee,  int processingTimeMinutes,  bool isActive,  bool isRecommended,  String? logoUrl,  String? unavailabilityReason,  String? requiredCurrency)?  $default,) {final _that = this;
 switch (_that) {
 case _NetworkInfo() when $default != null:
-return $default(_that.id,_that.name,_that.type,_that.country,_that.currency,_that.minAmount,_that.maxAmount,_that.feePercentage,_that.fixedFee,_that.processingTimeMinutes,_that.isActive,_that.isRecommended);case _:
+return $default(_that.id,_that.name,_that.type,_that.country,_that.currency,_that.minAmount,_that.maxAmount,_that.feePercentage,_that.fixedFee,_that.processingTimeMinutes,_that.isActive,_that.isRecommended,_that.logoUrl,_that.unavailabilityReason,_that.requiredCurrency);case _:
   return null;
 
 }
@@ -510,7 +513,7 @@ return $default(_that.id,_that.name,_that.type,_that.country,_that.currency,_tha
 @JsonSerializable()
 
 class _NetworkInfo implements NetworkInfo {
-  const _NetworkInfo({required this.id, required this.name, required this.type, required this.country, required this.currency, this.minAmount = 0, this.maxAmount = 0, this.feePercentage = 0, this.fixedFee = 0, this.processingTimeMinutes = 0, this.isActive = true, this.isRecommended = false});
+  const _NetworkInfo({required this.id, required this.name, required this.type, required this.country, required this.currency, this.minAmount = 0, this.maxAmount = 0, this.feePercentage = 0, this.fixedFee = 0, this.processingTimeMinutes = 0, this.isActive = true, this.isRecommended = false, this.logoUrl = null, this.unavailabilityReason = null, this.requiredCurrency = null});
   factory _NetworkInfo.fromJson(Map<String, dynamic> json) => _$NetworkInfoFromJson(json);
 
 @override final  String id;
@@ -525,6 +528,9 @@ class _NetworkInfo implements NetworkInfo {
 @override@JsonKey() final  int processingTimeMinutes;
 @override@JsonKey() final  bool isActive;
 @override@JsonKey() final  bool isRecommended;
+@override@JsonKey() final  String? logoUrl;
+@override@JsonKey() final  String? unavailabilityReason;
+@override@JsonKey() final  String? requiredCurrency;
 
 /// Create a copy of NetworkInfo
 /// with the given fields replaced by the non-null parameter values.
@@ -539,16 +545,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NetworkInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.country, country) || other.country == country)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.minAmount, minAmount) || other.minAmount == minAmount)&&(identical(other.maxAmount, maxAmount) || other.maxAmount == maxAmount)&&(identical(other.feePercentage, feePercentage) || other.feePercentage == feePercentage)&&(identical(other.fixedFee, fixedFee) || other.fixedFee == fixedFee)&&(identical(other.processingTimeMinutes, processingTimeMinutes) || other.processingTimeMinutes == processingTimeMinutes)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isRecommended, isRecommended) || other.isRecommended == isRecommended));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _NetworkInfo&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.country, country) || other.country == country)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.minAmount, minAmount) || other.minAmount == minAmount)&&(identical(other.maxAmount, maxAmount) || other.maxAmount == maxAmount)&&(identical(other.feePercentage, feePercentage) || other.feePercentage == feePercentage)&&(identical(other.fixedFee, fixedFee) || other.fixedFee == fixedFee)&&(identical(other.processingTimeMinutes, processingTimeMinutes) || other.processingTimeMinutes == processingTimeMinutes)&&(identical(other.isActive, isActive) || other.isActive == isActive)&&(identical(other.isRecommended, isRecommended) || other.isRecommended == isRecommended)&&(identical(other.logoUrl, logoUrl) || other.logoUrl == logoUrl)&&(identical(other.unavailabilityReason, unavailabilityReason) || other.unavailabilityReason == unavailabilityReason)&&(identical(other.requiredCurrency, requiredCurrency) || other.requiredCurrency == requiredCurrency));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,type,country,currency,minAmount,maxAmount,feePercentage,fixedFee,processingTimeMinutes,isActive,isRecommended);
+int get hashCode => Object.hash(runtimeType,id,name,type,country,currency,minAmount,maxAmount,feePercentage,fixedFee,processingTimeMinutes,isActive,isRecommended,logoUrl,unavailabilityReason,requiredCurrency);
 
 @override
 String toString() {
-  return 'NetworkInfo(id: $id, name: $name, type: $type, country: $country, currency: $currency, minAmount: $minAmount, maxAmount: $maxAmount, feePercentage: $feePercentage, fixedFee: $fixedFee, processingTimeMinutes: $processingTimeMinutes, isActive: $isActive, isRecommended: $isRecommended)';
+  return 'NetworkInfo(id: $id, name: $name, type: $type, country: $country, currency: $currency, minAmount: $minAmount, maxAmount: $maxAmount, feePercentage: $feePercentage, fixedFee: $fixedFee, processingTimeMinutes: $processingTimeMinutes, isActive: $isActive, isRecommended: $isRecommended, logoUrl: $logoUrl, unavailabilityReason: $unavailabilityReason, requiredCurrency: $requiredCurrency)';
 }
 
 
@@ -559,7 +565,7 @@ abstract mixin class _$NetworkInfoCopyWith<$Res> implements $NetworkInfoCopyWith
   factory _$NetworkInfoCopyWith(_NetworkInfo value, $Res Function(_NetworkInfo) _then) = __$NetworkInfoCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, NetworkType type, String country, String currency, double minAmount, double maxAmount, double feePercentage, double fixedFee, int processingTimeMinutes, bool isActive, bool isRecommended
+ String id, String name, NetworkType type, String country, String currency, double minAmount, double maxAmount, double feePercentage, double fixedFee, int processingTimeMinutes, bool isActive, bool isRecommended, String? logoUrl, String? unavailabilityReason, String? requiredCurrency
 });
 
 
@@ -576,7 +582,7 @@ class __$NetworkInfoCopyWithImpl<$Res>
 
 /// Create a copy of NetworkInfo
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? type = null,Object? country = null,Object? currency = null,Object? minAmount = null,Object? maxAmount = null,Object? feePercentage = null,Object? fixedFee = null,Object? processingTimeMinutes = null,Object? isActive = null,Object? isRecommended = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? type = null,Object? country = null,Object? currency = null,Object? minAmount = null,Object? maxAmount = null,Object? feePercentage = null,Object? fixedFee = null,Object? processingTimeMinutes = null,Object? isActive = null,Object? isRecommended = null,Object? logoUrl = freezed,Object? unavailabilityReason = freezed,Object? requiredCurrency = freezed,}) {
   return _then(_NetworkInfo(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -590,7 +596,10 @@ as double,fixedFee: null == fixedFee ? _self.fixedFee : fixedFee // ignore: cast
 as double,processingTimeMinutes: null == processingTimeMinutes ? _self.processingTimeMinutes : processingTimeMinutes // ignore: cast_nullable_to_non_nullable
 as int,isActive: null == isActive ? _self.isActive : isActive // ignore: cast_nullable_to_non_nullable
 as bool,isRecommended: null == isRecommended ? _self.isRecommended : isRecommended // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,logoUrl: freezed == logoUrl ? _self.logoUrl : logoUrl // ignore: cast_nullable_to_non_nullable
+as String?,unavailabilityReason: freezed == unavailabilityReason ? _self.unavailabilityReason : unavailabilityReason // ignore: cast_nullable_to_non_nullable
+as String?,requiredCurrency: freezed == requiredCurrency ? _self.requiredCurrency : requiredCurrency // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

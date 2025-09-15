@@ -54,6 +54,9 @@ _NetworkInfo _$NetworkInfoFromJson(Map<String, dynamic> json) => _NetworkInfo(
   processingTimeMinutes: (json['processingTimeMinutes'] as num?)?.toInt() ?? 0,
   isActive: json['isActive'] as bool? ?? true,
   isRecommended: json['isRecommended'] as bool? ?? false,
+  logoUrl: json['logoUrl'] as String? ?? null,
+  unavailabilityReason: json['unavailabilityReason'] as String? ?? null,
+  requiredCurrency: json['requiredCurrency'] as String? ?? null,
 );
 
 Map<String, dynamic> _$NetworkInfoToJson(_NetworkInfo instance) =>
@@ -70,6 +73,9 @@ Map<String, dynamic> _$NetworkInfoToJson(_NetworkInfo instance) =>
       'processingTimeMinutes': instance.processingTimeMinutes,
       'isActive': instance.isActive,
       'isRecommended': instance.isRecommended,
+      'logoUrl': instance.logoUrl,
+      'unavailabilityReason': instance.unavailabilityReason,
+      'requiredCurrency': instance.requiredCurrency,
     };
 
 _FeeCalculation _$FeeCalculationFromJson(Map<String, dynamic> json) =>

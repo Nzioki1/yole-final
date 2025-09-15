@@ -94,7 +94,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
       backgroundColor: DesignTokens.background,
       body: SparkleLayer(
         enabled: widget.enableSparkles && !_isLowPowerMode,
-        particleCount: 25,
+        quality: SparkleQuality.medium,
         animationSpeed: 1.2,
         baseAlpha: 0.7,
         child: SafeArea(

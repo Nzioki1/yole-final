@@ -301,11 +301,11 @@ jobs:
       - name: Run performance budget check
         run: |
           echo "Running performance budget check..."
-          flutter test test/perf/performance_test.dart
+          flutter test test/perf/frame_budget_test.dart --reporter=expanded
           
-          # Note: Full frame budget check requires emulator/device
-          # This is a lightweight check that can run in CI
-          echo "Performance budget check completed (lightweight mode)"
+          echo "Performance budget check completed"
+          echo "Budget: 18.0ms per frame"
+          echo "Target: 60fps performance"
 
   # Release Build & Deploy (main branch only)
   release-build:

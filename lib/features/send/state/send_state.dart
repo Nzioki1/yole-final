@@ -54,6 +54,9 @@ abstract class NetworkInfo with _$NetworkInfo {
     @Default(0) int processingTimeMinutes,
     @Default(true) bool isActive,
     @Default(false) bool isRecommended,
+    @Default(null) String? logoUrl,
+    @Default(null) String? unavailabilityReason,
+    @Default(null) String? requiredCurrency,
   }) = _NetworkInfo;
 
   factory NetworkInfo.fromJson(Map<String, dynamic> json) =>

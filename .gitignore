@@ -43,3 +43,20 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+# Flutter build outputs
+/build/
+/.android/
+/.ios/
+/.macos/
+/linux/build/
+/web/build/
+/ios/Pods/
+.dart_tool/
+.packages
+# IDE
+.idea/
+.vscode/
+/*.iml
+# Design exports (keep only web-sized refs in Git)
+design/**/raw/**
+design/**/exports/original/**

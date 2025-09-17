@@ -60,3 +60,16 @@ app.*.map.json
 # Design exports (keep only web-sized refs in Git)
 design/**/raw/**
 design/**/exports/original/**
+/build/
+/.android/
+/.ios/
+/.macos/
+/linux/build/
+/web/build/
+/ios/Pods/
+.dart_tool/
+.package.idea/
+.vscode/
+/*.iml
+design/**/raw/**
+design/**/exports/original/**

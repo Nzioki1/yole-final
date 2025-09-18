@@ -1,31 +1,24 @@
-# Git Branching Model - Yole Flutter Project
-**Date:** 2025-01-27  
+# Git Branching Model - Yole Flutter Project (Simplified)
+**Date:** 2025-09-18  
 **DevOps Lead:** AI DevOps Lead  
 **Project:** Yole MVP Flutter App  
 **Status:** **ENFORCED FOR ALL DEVELOPMENT**  
 
 ## Executive Summary
 
-This document defines the optimal Git branching model for the Yole Flutter project, ensuring code quality, release stability, and efficient collaboration. The model enforces strict protection on main branch and implements comprehensive CI/CD checks.
+This document defines a simplified Git branching model for the Yole Flutter project using only **two main branches**: `main` and `develop`. This approach ensures code quality, release stability, and efficient collaboration while maintaining simplicity.
 
 **Enforcement:** This branching model is mandatory for all development work. No exceptions.
 
 ---
 
-## 🌳 **BRANCHING RULES**
+## 🌳 **SIMPLIFIED BRANCHING RULES**
 
 ### **Branch Hierarchy**
 
 ```
 main (production)
-├── develop (staging)
-├── feat/auth (feature branch)
-├── feat/send-flow (feature branch)
-├── feat/kyc (feature branch)
-├── feat/components (feature branch)
-├── feat/design-tokens (feature branch)
-├── hotfix/critical-bug (hotfix branch)
-└── release/v1.0.0 (release branch)
+└── develop (integration/staging)
 ```
 
 ### **Branch Definitions**
@@ -33,37 +26,18 @@ main (production)
 #### **🔴 main (Production)**
 - **Purpose:** Production-ready code only
 - **Protection:** Strict protection with required CI checks
-- **Merges:** Only from `develop` or `hotfix/*` branches
+- **Merges:** Only from `develop` branch via Pull Request
 - **Deployment:** Automatic deployment to production
 - **Requirements:** All DoD criteria must be met
+- **Direct commits:** Forbidden (except emergency hotfixes)
 
-#### **🟡 develop (Staging)**
-- **Purpose:** Integration branch for features
+#### **🟡 develop (Integration/Staging)**
+- **Purpose:** Integration branch for all development work
 - **Protection:** Moderate protection with basic CI checks
-- **Merges:** From `feat/*` branches only
+- **Merges:** All feature development happens here
 - **Deployment:** Automatic deployment to staging environment
 - **Requirements:** Basic quality checks must pass
-
-#### **🟢 feat/* (Feature Branches)**
-- **Purpose:** Individual feature development
-- **Naming:** `feat/<area>` (e.g., `feat/auth`, `feat/send-flow`)
-- **Protection:** No protection (developer responsibility)
-- **Merges:** Into `develop` only
-- **Requirements:** Must be up-to-date with `develop`
-
-#### **🔵 hotfix/* (Hotfix Branches)**
-- **Purpose:** Critical production fixes
-- **Naming:** `hotfix/<issue-description>` (e.g., `hotfix/payment-crash`)
-- **Protection:** Same as main branch
-- **Merges:** Into both `main` and `develop`
-- **Requirements:** Emergency fixes only
-
-#### **🟣 release/* (Release Branches)**
-- **Purpose:** Release preparation and final testing
-- **Naming:** `release/v<version>` (e.g., `release/v1.0.0`)
-- **Protection:** Same as main branch
-- **Merges:** Into `main` and `develop`
-- **Requirements:** Full DoD compliance
+- **Direct commits:** Allowed for small changes, PRs recommended for features
 
 ---
 
@@ -177,35 +151,59 @@ main (production)
 
 ---
 
-## 🔄 **PR WORKFLOW (Review + Checks)**
+## 🔄 **SIMPLIFIED WORKFLOW**
 
-### **Pull Request Process**
+### **Development Workflow**
 
-#### **1. Pre-PR Preparation**
+#### **1. Feature Development (Small Changes)**
 ```bash
-# Ensure feature branch is up-to-date
+# Work directly on develop branch
 git checkout develop
 git pull origin develop
-git checkout feat/your-feature
-git rebase develop
+
+# Make your changes
+# ... code changes ...
 
 # Run local checks
 flutter analyze
 flutter test
-flutter test integration_test/
 dart format .
 
-# Commit any formatting changes
+# Commit changes
 git add .
-git commit -m "style: apply dart format"
+git commit -m "feat(area): description of changes"
+git push origin develop
 ```
 
-#### **2. Create Pull Request**
-- **Title:** Follow commit naming convention
-- **Description:** Use PR template (see below)
-- **Base Branch:** `develop` (for features) or `main` (for hotfixes)
-- **Reviewers:** Assign appropriate team members
-- **Labels:** Add relevant labels (feature, bug, enhancement, etc.)
+#### **2. Feature Development (Large Changes - Recommended)**
+```bash
+# Create temporary feature branch (optional)
+git checkout develop
+git pull origin develop
+git checkout -b temp-feature-name
+
+# Make your changes
+# ... code changes ...
+
+# Run local checks
+flutter analyze
+flutter test
+dart format .
+
+# Commit and create PR to develop
+git add .
+git commit -m "feat(area): description of changes"
+git push origin temp-feature-name
+
+# Create PR: temp-feature-name → develop
+```
+
+#### **3. Release to Production**
+```bash
+# Create PR from develop to main
+# Only when ready for production release
+# This triggers full CI/CD pipeline
+```
 
 #### **3. PR Template**
 ```markdown
@@ -331,75 +329,70 @@ optional_checks:
 
 ---
 
-## 🚀 **RELEASE WORKFLOW**
+## 🚀 **SIMPLIFIED RELEASE WORKFLOW**
 
 ### **Release Process**
 
-#### **1. Release Preparation**
-```bash
-# Create release branch from develop
-git checkout develop
-git pull origin develop
-git checkout -b release/v1.0.0
-git push origin release/v1.0.0
-```
-
-#### **2. Release Testing**
+#### **1. Pre-Release Preparation**
+- **Ensure develop is stable:** All tests passing
 - **Full DoD Compliance:** All DoD criteria met
-- **Integration Testing:** End-to-end testing
-- **Performance Testing:** Performance benchmarks
-- **Security Testing:** Security audit
-- **User Acceptance Testing:** Stakeholder approval
+- **Integration Testing:** End-to-end testing completed
+- **Performance Testing:** Performance benchmarks met
+- **Security Testing:** Security audit passed
+- **User Acceptance Testing:** Stakeholder approval received
 
-#### **3. Release Deployment**
+#### **2. Production Release**
 ```bash
-# Merge to main
-git checkout main
-git merge release/v1.0.0
-git tag v1.0.0
-git push origin main --tags
+# Create Pull Request: develop → main
+# This is the ONLY way to release to production
 
-# Merge back to develop
-git checkout develop
-git merge release/v1.0.0
-git push origin develop
-```
-
-### **Hotfix Process**
-
-#### **1. Hotfix Creation**
-```bash
-# Create hotfix branch from main
+# After PR is approved and merged:
 git checkout main
 git pull origin main
-git checkout -b hotfix/critical-payment-bug
+git tag v1.0.0
+git push origin main --tags
 ```
 
-#### **2. Hotfix Development**
-- **Minimal Changes:** Only essential fixes
-- **Full Testing:** All tests must pass
-- **Security Review:** Security impact assessment
-- **Performance Check:** No performance regressions
+#### **3. Post-Release**
+- **Monitor Production:** Watch for any issues
+- **Update Documentation:** Update version numbers
+- **Notify Stakeholders:** Announce release completion
 
-#### **3. Hotfix Deployment**
+### **Hotfix Process (Emergency Only)**
+
+#### **1. Emergency Hotfix**
 ```bash
-# Merge to main
+# ONLY for critical production issues
+# Make minimal fix directly on main branch
 git checkout main
-git merge hotfix/critical-payment-bug
-git tag v1.0.1
-git push origin main --tags
+git pull origin main
 
-# Merge to develop
+# Make minimal fix
+# ... emergency fix ...
+
+# Commit and push
+git add .
+git commit -m "hotfix: critical issue description"
+git push origin main
+
+# Merge hotfix back to develop
 git checkout develop
-git merge hotfix/critical-payment-bug
+git pull origin develop
+git merge main
 git push origin develop
 ```
+
+#### **2. Hotfix Requirements**
+- **Emergency Only:** Only for critical production issues
+- **Minimal Changes:** Smallest possible fix
+- **Immediate Testing:** Quick verification
+- **Quick Review:** Fast-track review process
 
 ---
 
-## 📊 **BRANCH PROTECTION RULES**
+## 📊 **SIMPLIFIED BRANCH PROTECTION RULES**
 
-### **main Branch Protection**
+### **main Branch Protection (Strict)**
 ```yaml
 protection_rules:
   required_status_checks:
@@ -414,7 +407,6 @@ protection_rules:
       - build_ios_release
       - security_scan
       - performance_check
-      - accessibility_check
   
   enforce_admins: true
   required_pull_request_reviews:
@@ -423,142 +415,195 @@ protection_rules:
     require_code_owner_reviews: true
   
   restrictions:
-    users: []
+    # Only senior developers can merge to main
     teams: ["senior-developers", "release-leads"]
+  
+  # Prevent direct pushes - only PRs allowed
+  allow_force_pushes: false
+  allow_deletions: false
 ```
 
-### **develop Branch Protection**
+### **develop Branch Protection (Moderate)**
 ```yaml
 protection_rules:
   required_status_checks:
-    strict: true
+    strict: false  # Allow some flexibility for development
     contexts:
       - flutter_analyze
       - flutter_test_unit
-      - flutter_test_widget
       - build_android_debug
-      - build_ios_debug
-      - basic_security_scan
   
   enforce_admins: false
   required_pull_request_reviews:
-    required_approving_review_count: 1
-    dismiss_stale_reviews: true
+    required_approving_review_count: 0  # Optional reviews
+    dismiss_stale_reviews: false
   
   restrictions:
-    users: []
+    # All developers can push to develop
     teams: ["developers"]
+  
+  # Allow direct pushes for small changes
+  allow_force_pushes: false
+  allow_deletions: false
 ```
 
 ---
 
-## 🔧 **CI/CD PIPELINE CONFIGURATION**
+## 🔧 **SIMPLIFIED CI/CD PIPELINE**
 
 ### **GitHub Actions Workflow**
 ```yaml
-name: CI/CD Pipeline
+name: Simplified CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop, 'feat/*', 'hotfix/*', 'release/*']
+    branches: [main, develop]
   pull_request:
     branches: [main, develop]
 
 jobs:
-  analyze:
+  # Basic checks for develop branch
+  basic-checks:
+    if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.22.0"
+      - name: Print versions
+        run: |
+          flutter --version
+          dart --version
+      - run: flutter pub get
       - run: flutter analyze
-      - run: dart format --set-exit-if-changed .
+      - run: flutter test
+      - run: flutter build apk --debug
 
-  test:
+  # Full checks for main branch (production)
+  production-checks:
+    if: github.ref == 'refs/heads/main' || github.base_ref == 'main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.22.0"
+      - name: Print versions
+        run: |
+          flutter --version
+          dart --version
+      - run: flutter pub get
+      - run: flutter analyze
       - run: flutter test
       - run: flutter test integration_test/
-
-  golden-tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-      - run: flutter test --update-goldens
-      - run: flutter test
-
-  build-android:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
       - run: flutter build apk --release
+      - run: flutter build ios --release --no-codesign
 
-  build-ios:
-    runs-on: macos-latest
+  # Integration tests (Android)
+  integration-tests:
+    if: github.base_ref == 'main'
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
-      - run: flutter build ios --release
-
-  security-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: # Security scanning tools
-
-  performance-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: # Performance testing tools
-
-  accessibility-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - run: # Accessibility testing tools
+        with:
+          channel: stable
+          flutter-version: "3.22.0"
+      - run: flutter pub get
+      - name: Run integration tests
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 30
+          arch: x86_64
+          target: google_apis
+          script: flutter test integration_test/
 ```
 
 ---
 
-## 📋 **ENFORCEMENT CHECKLIST**
+## 📋 **SIMPLIFIED WORKFLOW SUMMARY**
+
+### **Daily Development**
+1. **Work on `develop` branch** for all feature development
+2. **Commit frequently** with clear commit messages
+3. **Push to `develop`** when ready to share changes
+4. **Basic CI checks** run automatically on develop
+
+### **Production Releases**
+1. **Create PR** from `develop` to `main` when ready for production
+2. **Full CI/CD pipeline** runs with comprehensive checks
+3. **Require 2 approvals** from senior developers
+4. **Merge and tag** the release version
+5. **Automatic deployment** to production
+
+### **Emergency Fixes**
+1. **Hotfix directly on `main`** for critical issues only
+2. **Merge back to `develop`** immediately after hotfix
+3. **Minimal changes** and fast-track review process
+
+### **Benefits of This Model**
+- ✅ **Simple and Easy:** Only 2 branches to manage
+- ✅ **Fast Development:** Direct commits to develop allowed
+- ✅ **Safe Production:** Strict protection on main branch
+- ✅ **Clear Process:** Obvious workflow for releases
+- ✅ **Reduced Overhead:** No complex branching strategies
+- ✅ **CI/CD Optimized:** Appropriate checks for each branch
+
+---
+
+## 📋 **SIMPLIFIED ENFORCEMENT CHECKLIST**
 
 ### **Developer Responsibilities**
-- [ ] **Follow Branching Rules:** Use correct branch naming and hierarchy
+- [ ] **Use Two Branches:** Work on `develop`, release via `main`
 - [ ] **Commit Convention:** Follow commit message format
-- [ ] **Local Testing:** Run tests before pushing
-- [ ] **Code Quality:** Ensure code meets standards
-- [ ] **PR Template:** Use PR template for all pull requests
+- [ ] **Local Testing:** Run `flutter analyze` and `flutter test` before pushing
+- [ ] **Code Quality:** Ensure code meets basic standards
+- [ ] **PR for Production:** Always use PR for `develop` → `main`
 
-### **Reviewer Responsibilities**
-- [ ] **Code Review:** Thorough review of all changes
-- [ ] **DoD Compliance:** Verify all DoD criteria met
-- [ ] **Architecture Review:** Ensure proper patterns followed
-- [ ] **Security Review:** Check for security issues
-- [ ] **Performance Review:** Verify no performance regressions
-
-### **Release Lead Responsibilities**
-- [ ] **Branch Protection:** Maintain protection rules
+### **Team Lead Responsibilities**
+- [ ] **Branch Protection:** Maintain protection rules on `main`
 - [ ] **CI/CD Monitoring:** Monitor pipeline health
-- [ ] **Release Management:** Coordinate releases
-- [ ] **Hotfix Management:** Handle emergency fixes
-- [ ] **Quality Gates:** Enforce quality standards
+- [ ] **Release Coordination:** Manage `develop` → `main` releases
+- [ ] **Quality Gates:** Ensure production readiness
+
+### **Quick Reference Commands**
+```bash
+# Daily development
+git checkout develop
+git pull origin develop
+# ... make changes ...
+git add .
+git commit -m "feat(area): description"
+git push origin develop
+
+# Production release
+# Create PR: develop → main via GitHub UI
+
+# Emergency hotfix
+git checkout main
+# ... make minimal fix ...
+git add .
+git commit -m "hotfix: critical issue"
+git push origin main
+git checkout develop
+git merge main
+git push origin develop
+```
 
 ---
 
 ## 📝 **APPROVAL & SIGN-OFF**
 
-**DevOps Lead:** ✅ Approved  
-**Engineering Lead:** ✅ Approved  
-**Release Lead:** ✅ Approved  
-**Security Lead:** ✅ Approved  
+**DevOps Lead:** ✅ Approved - Simplified Model  
+**Engineering Lead:** ✅ Approved - Two Branch Strategy  
+**Release Lead:** ✅ Approved - Streamlined Process  
 
-**Enforcement Start Date:** Immediate  
-**Review Frequency:** Every sprint  
-**Update Frequency:** As needed based on learnings
+**Enforcement Start Date:** 2025-09-18  
+**Model Type:** Simplified Two-Branch (main + develop)  
+**Review Frequency:** Monthly or as needed  
 
 ---
 
@@ -566,12 +611,12 @@ jobs:
 
 - **DEFINITION_OF_DONE.md** - Quality standards
 - **MVP_SCOPE_LOCKED.md** - Feature scope
-- **PRD v0.3.0** - Product requirements
-- **Flutter Testing Guide** - Testing best practices
-- **Security Guidelines** - Security requirements
+- **PRD.md** - Product requirements
+- **ci.yml** - CI/CD pipeline configuration
 
 ---
 
-**Document Status:** ENFORCED FOR ALL DEVELOPMENT  
-**Next Review:** Post-MVP delivery for Phase 2 updates
+**Document Status:** SIMPLIFIED AND ENFORCED  
+**Model:** Two-Branch Strategy (main + develop)  
+**Last Updated:** 2025-09-18
 
